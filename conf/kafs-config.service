@@ -1,0 +1,9 @@
+[Unit]
+Description=Preload AFS Cell Database
+After=local-fs.target
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+ExecStartPre=/sbin/modprobe -q kafs
+ExecStart=/usr/libexec/kafs-preload

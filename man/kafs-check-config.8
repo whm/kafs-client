@@ -1,0 +1,78 @@
+.\"
+.\" Copyright (C) 2019 Red Hat, Inc. All Rights Reserved.
+.\" Written by David Howells (dhowells@redhat.com)
+.\"
+.\" This program is free software; you can redistribute it and/or
+.\" modify it under the terms of the GNU General Public License
+.\" as published by the Free Software Foundation; either version
+.\" 2 of the License, or (at your option) any later version.
+.\"
+.TH KAFS-CHECK-CONFIG 1 "16 Apr 2019" Linux "AFS Config Checker"
+.SH NAME
+kafs-check-config \- AFS configuration check tool
+.SH SYNOPSIS
+\fBkafs-check-config\fR [OPTION]... [<cellname>]*
+.P
+Where options are:
+.P
+.RS
+[-46PDvv] [-c <conffile>]* [-N <restriction>]
+.RE
+.SH DESCRIPTION
+This program is used to check the configuration for the in-kernel AFS
+filesystem (kAFS).  This configuration is used when systemd mounts the
+filesystem to load up the cell database and create cell automounts in the /afs
+directory.
+.P
+The configuration is also used by the kernel name resolver upcall to provide
+static configuration for some cells and to specify overrides and limits on DNS
+lookups.
+.P
+If a list of \fB<cellname>\fR arguments is given, the listed cells will be
+dumped, including the sources of the Volume Location records and address
+records.
+.P
+The available options are:
+.SH ARGUMENTS
+.IP -4
+Only show IPv4 addresses in the dump.
+.IP -6
+Only show IPv6 addresses in the dump.
+.IP -P
+Dump the parse tree of the configuration file(s).
+.IP -D
+Dump the cell database extracted from the configuration.
+.IP -v
+Increase the verbosity of the output.  This may be specified multiple times.
+.IP "-c <conffile>"
+Specify a configuration file to read instead of the system default.  This may
+be specified multiple times and the configuration files are read and applied in
+order.
+.IP "-N <restriction>"
+Apply a restriction to the lookup performed for the listed cells (if any are).
+Restrictions include:
+.RS
+.IP "-N vl-srv"
+Don't use SRV records to find Volume Location servers.
+.IP "-N vl-afsdb"
+Don't use AFSDB records to find Volume Location servers.
+.IP "-N vl-all"
+Don't use SRV or AFSDB records to find Volume Location servers.
+.IP "-N vl-host"
+Don't look cell name up as hostname to find a Volume Location server.
+.IP "-N vl-dns"
+Don't do any lookups to find Volume Location servers.  Use only the static
+configuration.
+.RE
+.SH EXIT STATUS
+.IP 0
+If check okay and any dumping succeeded.
+.IP 1
+If an error occurs during processing.
+.IP 2
+If a command line error occurs.
+.SH SEE ALSO
+.ad l
+.nh
+.BR kafs (7),
+.BR kafs\-client.conf (5)
