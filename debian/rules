@@ -8,3 +8,6 @@ DH_VERBOSE = 1
 override_dh_auto_install:
 	dh_auto_install
 	dh_systemd_enable --name=afs
+	mkdir -p debian/kafs-client/etc/kafs
+	cp conf/etc.conf debian/kafs-client/etc/kafs
+
