@@ -1,0 +1,10 @@
+#!/usr/bin/make -f
+
+DH_VERBOSE = 1
+
+%:
+	dh $@ --with systemd
+
+override_dh_auto_install:
+	dh_auto_install
+	dh_systemd_enable --name=afs

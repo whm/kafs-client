@@ -1,0 +1,28 @@
+Source: kafs-client
+Section: net
+Priority: optional
+Build-Depends: debhelper (>= 12), libkrb5-dev, libkeyutils-dev, libssl-dev
+Maintainer: Bill MacAllister <bill@ca-zephyr.org>
+Standards-Version: 4.5.0
+Homepage: https://www.infradead.org/~dhowells/kafs/
+Vcs-Git: git://git.infradead.org/users/dhowells/kafs-client.git
+
+Package: kafs-client
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: The basic tools for kAFS and mounter for the AFS dynamic root
+ Provide basic AFS-compatible tools for kAFS and systemd scripts to mount the
+ dynamic root on /afs and preload the cell database.
+ .
+ This package also provides a library of shareable routines for dealing with
+ the kAFS filesystem.  These provide things like configuration parsing and DNS
+ lookups.
+
+Package: kafs-client-dev
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, kafs-client
+Description: The basic tools for kAFS and mounter for the AFS dynamic root
+ Provide basic AFS-compatible tools for kAFS and systemd scripts to mount the
+ dynamic root on /afs and preload the cell database.
+ .
+ Provides headers for kafs-client libraries.

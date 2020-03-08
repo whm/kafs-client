@@ -1,0 +1,10 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: kafs-client
+Upstream-Contact: David Howells <dhowells@redhat.com>
+Source: http://git.infradead.org/users/dhowells/kafs-client.git
+Copyright: 2018, 2019 David Howells
+License: GPL-2.0
+
+Files: *
+Copyright: 2018, 2019 David Howells
+License: GPL-2

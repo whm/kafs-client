@@ -1,0 +1,7 @@
+diff --git a/conf/kafs_dns.conf b/conf/kafs_dns.conf
+index 7e16d79..6e56e44 100644
+--- a/conf/kafs_dns.conf
++++ b/conf/kafs_dns.conf
+@@ -1 +1 @@
+-create  dns_resolver afsdb:*    *               /usr/libexec/kafs-dns %k
++create  dns_resolver afsdb:*    *               /usr/sbin/kafs-dns %k

@@ -1,0 +1,5 @@
+kafs-client (0.3-1) unstable; urgency=low
+
+  * Initial release. Closes: #933326
+
+ -- Bill MacAllister <bill@ca-zephyr.org>  Sun, 08 Mar 2020 08:20:23 +0000
