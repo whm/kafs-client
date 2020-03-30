@@ -6,6 +6,7 @@ Build-Depends:
  libkeyutils-dev,
  libkrb5-dev,
  libssl-dev,
+Rules-Requires-Root: no
 Maintainer: Bill MacAllister <bill@ca-zephyr.org>
 Standards-Version: 4.5.0
 Homepage: https://www.infradead.org/~dhowells/kafs/
