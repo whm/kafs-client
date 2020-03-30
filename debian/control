@@ -1,7 +1,7 @@
 Source: kafs-client
 Section: net
 Priority: optional
-Build-Depends: debhelper (>= 12), libkrb5-dev, libkeyutils-dev, libssl-dev
+Build-Depends: debhelper-compat (= 12), libkrb5-dev, libkeyutils-dev, libssl-dev
 Maintainer: Bill MacAllister <bill@ca-zephyr.org>
 Standards-Version: 4.5.0
 Homepage: https://www.infradead.org/~dhowells/kafs/
