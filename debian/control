@@ -9,7 +9,8 @@ Build-Depends:
 Maintainer: Bill MacAllister <bill@ca-zephyr.org>
 Standards-Version: 4.5.0
 Homepage: https://www.infradead.org/~dhowells/kafs/
-Vcs-Git: git://git.infradead.org/users/dhowells/kafs-client.git
+Vcs-Git: https://github.com/whm/kafs-client
+Vcs-Browser: https://github.com/whm/kafs-client
 
 Package: kafs-client
 Architecture: any
