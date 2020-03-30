@@ -37,7 +37,7 @@ Description: kAFS tool shared library
 
 Package: libkafs-client-dev
 Section: libdevel
-Architecture: all
+Architecture: any
 Depends:
  libkafs-client0 (= ${binary:Version}),
  ${misc:Depends},
