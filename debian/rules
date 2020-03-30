@@ -9,5 +9,4 @@ override_dh_auto_install:
 	dh_auto_install
 	dh_installsystemd --name=afs
 	mkdir -p debian/kafs-client/etc/kafs
-	cp conf/etc.conf debian/kafs-client/etc/kafs
-
+	cp conf/etc.conf debian/kafs-client/etc/kafs/client.conf
