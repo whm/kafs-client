@@ -1,3 +1,6 @@
+This patch is from the work of Spencer Olson <olsonse@umich.edu>.  The
+patches make builds possible using Debian package building tools.
+
 --- kafs-client-0.3-orig/Makefile	2019-07-05 22:35:44.000000000 +0000
 +++ kafs-client-0.3/Makefile	2020-02-25 07:04:41.055636059 +0000
 @@ -18,8 +18,6 @@

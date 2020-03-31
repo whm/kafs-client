@@ -1,2 +1,3 @@
 10-make.patch
 20-libexec.patch
+30-kafs-dns.patch
