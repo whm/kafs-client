@@ -1,0 +1,2 @@
+src/include/kafs usr/include
+src/libkafs_client.so usr/lib

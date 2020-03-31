@@ -6,7 +6,7 @@ of Spencer E. Olson <olsonse@umich.edu>.
 
 The installation is pretty straight forward.
 
-  1. Install the kafs-client and kafs-client-dev packages.
+  1. Install the kafs-client and libkafs-client-dev packages.
   2. Enable the afs.mount unit file.
   3. Optionally define a default cell and any cells that don't
      have DNS records.

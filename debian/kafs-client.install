@@ -6,9 +6,6 @@ src/kafs-preload usr/sbin
 #
 conf/cellservdb.conf usr/share/kafs-client
 #
-# This should realy be conf/client.conf after I figure out the rename
-conf/etc.conf etc/kafs
-#
 conf/kafs_dns.conf etc/request-key.d
 #
 conf/cellservdb.conf usr/share/kafs

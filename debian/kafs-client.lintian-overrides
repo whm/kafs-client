@@ -1,0 +1,3 @@
+# /afs is the traditional mount point for the AFS file system.
+kafs-client: non-standard-toplevel-dir afs/
+kafs-client: package-contains-empty-directory afs/
