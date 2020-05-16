@@ -1,5 +1,12 @@
+From: Bill MacAllister <bill@ca-zephyr.org>
+Date: Fri, 15 May 2020 18:32:56 -0700
+Subject: Fix help display and syslog output of kafs-dns
+
 This patch modifies the help display and syslog output of the kafs-dns
 binary to correctly identify the binary generating the output.
+---
+ src/dns_main.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/src/dns_main.c b/src/dns_main.c
 index 2c1e5a3..c50bf18 100644
