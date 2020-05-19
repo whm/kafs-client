@@ -1,3 +1,4 @@
-10-make.patch
-20-libexec.patch
-30-kafs-dns.patch
+0001-Remove-Makefile-rules-that-conflict-with-Debian.patch
+0002-Fix-location-of-kafs-dns.patch
+0003-Fix-help-display-and-syslog-output-of-kafs-dns.patch
+0004-Allow-the-environment-to-override-CFLAGS.patch
