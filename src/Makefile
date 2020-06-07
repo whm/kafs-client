@@ -57,7 +57,7 @@ progs: \
 	kafs-dns
 
 aklog-kafs: aklog-kafs.o
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< -lkrb5 -lcrypto -lkeyutils
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< -lkrb5 -lkeyutils
 
 kafs-check-config: kafs-check-config.o $(DEVELLIB)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ kafs-check-config.o -lkafs_client
