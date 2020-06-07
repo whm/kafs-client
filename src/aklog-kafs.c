@@ -20,6 +20,7 @@
  */
 
 #define _GNU_SOURCE
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,12 +28,10 @@
 #include <fcntl.h>
 #include <ctype.h>
 #include <keyutils.h>
+#include <byteswap.h>
+#include <sys/socket.h>
 #include <krb5/krb5.h>
-#include <openssl/hmac.h>
-#include <openssl/evp.h>
-#include <openssl/des.h>
-#include <openssl/md5.h>
-#include <openssl/err.h>
+#include <linux/if_alg.h>
 
 struct rxrpc_key_sec2_v1 {
         uint32_t        kver;                   /* key payload interface version */
@@ -44,30 +43,58 @@ struct rxrpc_key_sec2_v1 {
         uint8_t         ticket[0];              /* the encrypted ticket */
 };
 
+#define MD5_DIGEST_SIZE		16
+
 #define RXKAD_TKT_TYPE_KERBEROS_V5              256
 #define OSERROR(X, Y) do { if ((long)(X) == -1) { perror(Y); exit(1); } } while(0)
 #define OSZERROR(X, Y) do { if ((long)(X) == 0) { perror(Y); exit(1); } } while(0)
 #define KRBERROR(X, Y) do { if ((X) != 0) { const char *msg = krb5_get_error_message(k5_ctx, (X)); fprintf(stderr, "%s: %s\n", (Y), msg); krb5_free_error_message(k5_ctx, msg); exit(1); } } while(0)
 
-/*
- * Report an error from the crypto lib.
- */
-static void crypto_error(const char *msg)
+static const uint64_t des_weak_keys[16] = {
+	0x0101010101010101ULL,
+	0xFEFEFEFEFEFEFEFEULL,
+	0xE0E0E0E0F1F1F1F1ULL,
+	0x1F1F1F1F0E0E0E0EULL,
+	0x011F011F010E010EULL,
+	0x1F011F010E010E01ULL,
+	0x01E001E001F101F1ULL,
+	0xE001E001F101F101ULL,
+	0x01FE01FE01FE01FEULL,
+	0xFE01FE01FE01FE01ULL,
+	0x1FE01FE00EF10EF1ULL,
+	0xE01FE01FF10EF10EULL,
+	0x1FFE1FFE0EFE0EFEULL,
+	0xFE1FFE1FFE0EFE0EULL,
+	0xE0FEE0FEF1FEF1FEULL,
+	0xFEE0FEE0FEF1FEF1ULL
+};
+
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+
+static bool des_is_weak_key(uint64_t des)
 {
-	const char *file;
-	char buf[120];
-	int e, line;
+	size_t i;
 
-	if (ERR_peek_error() == 0)
-		return;
-	fprintf(stderr, "aklog: %s:\n", msg);
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+	des = bswap_64(des);
+#endif
 
-	while ((e = ERR_get_error_line(&file, &line))) {
-		ERR_error_string(e, buf);
-		fprintf(stderr, "- SSL %s: %s:%d\n", buf, file, line);
-	}
+	for (i = 0; i < ARRAY_SIZE(des_weak_keys); i++)
+		if (des_weak_keys[i] == des)
+			return true;
+	return false;
+}
 
-	exit(1);
+static void des_set_odd_parity(uint64_t *p)
+{
+	uint64_t x = *p, y, z;
+
+	y = x | 0x0101010101010101ULL;
+	y ^= y >> 4;
+	y ^= y >> 2;
+	y ^= y >> 1;
+	z = x | (y & 0x0101010101010101ULL);
+	*p = z;
 }
 
 /*
@@ -114,6 +141,34 @@ static unsigned int des3_key_to_random(void *random, const void *key, unsigned i
 }
 
 /*
+ * Do HMAC(MD5).
+ */
+static size_t HMAC_MD5(const void *key, size_t key_len,
+		       const void *data, size_t data_len,
+		       unsigned char *md, size_t md_len)
+{
+	static struct sockaddr_alg sa = {
+		.salg_family	= AF_ALG,
+		.salg_type	= "hash",
+		.salg_name	= "hmac(md5)",
+	};
+	int alg, sock, ret;
+
+	alg = socket(AF_ALG, SOCK_SEQPACKET, 0);
+	OSERROR(alg, "AF_ALG");
+	OSERROR(bind(alg, (struct sockaddr *)&sa, sizeof(sa)), "bind/AF_ALG");
+	OSERROR(setsockopt(alg, SOL_ALG, ALG_SET_KEY, key, key_len), "setsockopt/AF_ALG");
+	sock = accept(alg, NULL, 0);
+	OSERROR(sock, "AF_ALG");
+	OSERROR(write(sock, data, data_len), "write/AF_ALG");
+	ret = read(sock, md, md_len);
+	OSERROR(ret, "read/AF_ALG");
+	close(sock);
+	close(alg);
+	return ret;
+}
+
+/*
  * The data to pass into the key derivation function.
  */
 struct kdf_data {
@@ -138,33 +193,29 @@ static const struct kdf_data rxkad_kdf_data = {
  */
 static void key_derivation_function(krb5_creds *creds, uint8_t *session_key)
 {
+	struct kdf_data kdf_data = rxkad_kdf_data;
 	unsigned int i, len;
 	union {
-		unsigned char md5[MD5_DIGEST_LENGTH];
-		DES_cblock des;
+		unsigned char md5[MD5_DIGEST_SIZE];
+		uint64_t n_des;
 	} buf;
-	const EVP_MD *algo = EVP_md5(); /* We use HMAC-MD5 */
-
-	struct kdf_data kdf_data = rxkad_kdf_data;
 
 	for (i = 1; i <= 255; i++) {
 		/* K(i) = PRF(Ks, [i]_2 || Label || 0x00 || [L]_2) */
 		kdf_data.i_2 = i;
-		len = sizeof(buf.md5);
-		if (!HMAC(algo,
-			  creds->keyblock.contents, creds->keyblock.length,
-			  (unsigned char *)&kdf_data, sizeof(kdf_data),
-			  buf.md5, &len))
-			    crypto_error("HMAC");
+		len = HMAC_MD5(creds->keyblock.contents, creds->keyblock.length,
+			       (unsigned char *)&kdf_data, sizeof(kdf_data),
+			       buf.md5, sizeof(buf.md5));
 
-		if (len < sizeof(buf.des)) {
+		if (len < sizeof(buf.n_des)) {
 			fprintf(stderr, "aklog: HMAC returned short result\n");
 			exit(1);
 		}
 
 		/* Overlay the DES parity. */
-		DES_set_odd_parity(&buf.des);
-		if (!DES_is_weak_key(&buf.des))
+		buf.n_des &= 0xfefefefefefefefeULL;
+		des_set_odd_parity(&buf.n_des);
+		if (!des_is_weak_key(buf.n_des))
 			goto success;
 	}
 
@@ -172,7 +223,7 @@ static void key_derivation_function(krb5_creds *creds, uint8_t *session_key)
 	exit(1);
 
 success:
-	memcpy(session_key, buf.des, sizeof(buf.des));
+	memcpy(session_key, &buf.n_des, sizeof(buf.n_des));
 }
 
 /*
