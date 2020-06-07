@@ -4,8 +4,7 @@ Priority: optional
 Build-Depends:
  debhelper-compat (= 13),
  libkeyutils-dev,
- libkrb5-dev,
- libssl-dev,
+ libkrb5-dev
 Rules-Requires-Root: no
 Maintainer: Bill MacAllister <bill@ca-zephyr.org>
 Standards-Version: 4.5.0

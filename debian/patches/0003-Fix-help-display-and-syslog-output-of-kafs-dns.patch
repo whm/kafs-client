@@ -8,10 +8,10 @@ binary to correctly identify the binary generating the output.
  src/dns_main.c | 11 ++++++-----
  1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/src/dns_main.c b/src/dns_main.c
-index 2c1e5a3..c50bf18 100644
---- a/src/dns_main.c
-+++ b/src/dns_main.c
+Index: kafs-client/src/dns_main.c
+===================================================================
+--- kafs-client.orig/src/dns_main.c	2020-06-07 07:09:04.220523810 +0000
++++ kafs-client/src/dns_main.c	2020-06-07 07:09:04.208523255 +0000
 @@ -52,6 +52,7 @@
  
  static const char *DNS_PARSE_VERSION = "2.0";
@@ -20,7 +20,7 @@ index 2c1e5a3..c50bf18 100644
  static const char key_type[] = "dns_resolver";
  static const char afsdb_query_type[] = "afsdb:";
  static key_serial_t key;
-@@ -134,11 +135,11 @@ void usage(void)
+@@ -134,11 +135,11 @@
  {
  	if (isatty(2)) {
  		fprintf(stderr,	"Usage: %s [OPTION]... <key_serial>\n",
@@ -35,7 +35,7 @@ index 2c1e5a3..c50bf18 100644
  
  		fprintf(stderr,	"\n");
  		fprintf(stderr,	"Where [OPTION].. is a combination of one or more of:\n");
-@@ -151,7 +152,7 @@ void usage(void)
+@@ -151,7 +152,7 @@
  		fprintf(stderr,	"\t-o <dumpfile>\n");
  		fprintf(stderr,	"\t-v\n");
  	} else {
@@ -44,7 +44,7 @@ index 2c1e5a3..c50bf18 100644
  	}
  	exit(2);
  }
-@@ -233,7 +234,7 @@ int main(int argc, char *argv[])
+@@ -233,7 +234,7 @@
  	if (argc > 1 && strcmp(argv[1], "--help") == 0)
  		usage();
  

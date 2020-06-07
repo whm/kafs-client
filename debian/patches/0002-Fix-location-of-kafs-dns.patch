@@ -9,10 +9,10 @@ from up stream source to match Debian common usage.
  conf/kafs_dns.conf | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/conf/kafs_dns.conf b/conf/kafs_dns.conf
-index 7e16d79..6e56e44 100644
---- a/conf/kafs_dns.conf
-+++ b/conf/kafs_dns.conf
+Index: kafs-client/conf/kafs_dns.conf
+===================================================================
+--- kafs-client.orig/conf/kafs_dns.conf	2020-06-07 07:08:57.032191234 +0000
++++ kafs-client/conf/kafs_dns.conf	2020-06-07 07:08:57.020190679 +0000
 @@ -1 +1 @@
 -create  dns_resolver afsdb:*    *               /usr/libexec/kafs-dns %k
 +create  dns_resolver afsdb:*    *               /usr/sbin/kafs-dns %k

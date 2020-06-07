@@ -9,10 +9,10 @@ Debian build system.
  src/Makefile | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/Makefile b/src/Makefile
-index 16365b7..fec80f9 100644
---- a/src/Makefile
-+++ b/src/Makefile
+Index: kafs-client/src/Makefile
+===================================================================
+--- kafs-client.orig/src/Makefile	2020-06-07 07:09:09.764780358 +0000
++++ kafs-client/src/Makefile	2020-06-07 07:09:09.756779988 +0000
 @@ -1,4 +1,4 @@
 -CFLAGS		= -g -Wall -Wsign-compare
 +CFLAGS		?= -g -Wall -Wsign-compare
