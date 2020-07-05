@@ -65,7 +65,7 @@ install: all
 	$(INSTALL) -D -m 0644 man/*.7 $(DESTDIR)$(MAN7)/
 	$(INSTALL) -D -m 0644 man/*.8 $(DESTDIR)$(MAN8)/
 	$(INSTALL) -D -m 0644 conf/cellservdb.conf $(DESTDIR)$(DATADIR)/cellservdb.conf
-	$(INSTALL) -D -m 0644 conf/etc.conf $(DESTDIR)$(ETCDIR)/kafs/client.conf
+	$(INSTALL) -D -m 0644 conf/client.conf $(DESTDIR)$(ETCDIR)/kafs/client.conf
 	$(INSTALL) -D -m 0644 conf/kafs_dns.conf $(DESTDIR)$(ETCDIR)/request-key.d/kafs_dns.conf
 	$(INSTALL) -D -m 0644 conf/kafs-config.service $(DESTDIR)$(UNITDIR)/kafs-config.service
 	$(INSTALL) -D -m 0644 conf/afs.mount $(DESTDIR)$(UNITDIR)/afs.mount

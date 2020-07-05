@@ -51,12 +51,11 @@
 #include "dns_afsdb.h"
 
 static const char *DNS_PARSE_VERSION = "2.0";
-static const char prog[] = "dns_afsdb";
+static const char prog[] = "kafs-dns";
 static const char key_type[] = "dns_resolver";
 static const char afsdb_query_type[] = "afsdb:";
 static key_serial_t key;
 static int debug_mode;
-static bool one_addr_only = true;
 static unsigned int output_version = 0;
 
 /*
@@ -197,9 +196,9 @@ static void parse_callout(char *options, struct kafs_lookup_context *ctx)
 		} else if (strcmp(k, "ipv6") == 0) {
 			ctx->want_ipv4_addrs = false;
 			ctx->want_ipv6_addrs = true;
-		} else if (strcmp(k, "list") == 0) {
-			one_addr_only = false;
 		} else if (strcmp(k, "srv") == 0) {
+			if (!val)
+				error("Option srv missing version");
 			output_version = atoi(val);
 		}
 	} while (*options);
@@ -235,7 +234,7 @@ int main(int argc, char *argv[])
 
 	openlog(prog, 0, LOG_DAEMON);
 
-	while ((ret = getopt_long(argc, argv, "Dvc:N:o:V:", long_options, NULL)) != -1) {
+	while ((ret = getopt_long(argc, argv, "Dvc:N:o:V", long_options, NULL)) != -1) {
 		switch (ret) {
 		case 'c':
 			if (filec >= 9) {

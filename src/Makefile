@@ -1,4 +1,4 @@
-CFLAGS		= -g -Wall -Wsign-compare
+CFLAGS		?= -g -Wall -Wsign-compare
 
 include Makefile.config
 
