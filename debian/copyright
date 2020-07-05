@@ -5,6 +5,9 @@ Source: http://git.infradead.org/users/dhowells/kafs-client.git
 
 Files: *
 Copyright: 2018, 2019 David Howells
+  2007, 2017, 2018, 2019 Red Hat, Inc.
+  2008 Chaskiel Grundman
+  2010 Wang Lei <wang840925@gmail.com>
 License: GPL-2+
 
 Files: debian/*
