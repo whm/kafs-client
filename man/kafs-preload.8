@@ -1,0 +1,44 @@
+.\"
+.\" Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
+.\" Written by David Howells (dhowells@redhat.com)
+.\"
+.\" This program is free software; you can redistribute it and/or
+.\" modify it under the terms of the GNU General Public License
+.\" as published by the Free Software Foundation; either version
+.\" 2 of the License, or (at your option) any later version.
+.\"
+.TH KAFS-PRELOAD 8 "9 Jun 2020" Linux "AFS configuration preloader"
+.SH NAME
+kafs-preload \- AFS filesystem configuration preloader
+.SH SYNOPSIS
+\fB/usr/libexec/kafs-preload [-Dv]\fR
+.SH DESCRIPTION
+This program loads static configuration into the AFS filesystem, such as
+preloading some cells and setting the workstation cell (@cell) and the system
+identifier list (@sys).
+.PP
+This is not intended to be called directly, but rather is intended to be called
+from a systemd service unit file.
+.PP
+The available options are:
+.IP -D
+Execute in debug mode.  Instead of writing to various
+.BR proc (5)
+files, it notes what it would do to stdout.
+.IP -v
+Increase the verbosity of the output.  This may be specified multiple times.
+.SH EXIT STATUS
+.IP 0
+On success.
+.IP 1
+If an error occurs during processing.
+.IP 2
+If a command line error occurs.
+.IP 3
+If bad configuration is detected.
+.SH SEE ALSO
+.ad l
+.nh
+.BR kafs (7),
+.BR kafs\-client.conf (5),
+.BR proc (5)

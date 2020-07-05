@@ -1,0 +1,130 @@
+.\"
+.\" Copyright (C) 2019 Red Hat, Inc. All Rights Reserved.
+.\" Written by David Howells (dhowells@redhat.com)
+.\"
+.\" This program is free software; you can redistribute it and/or
+.\" modify it under the terms of the GNU General Public License
+.\" as published by the Free Software Foundation; either version
+.\" 2 of the License, or (at your option) any later version.
+.\"
+.TH KAFS 7 "16 Apr 2019" Linux "In-kernel AFS filesystem"
+.SH NAME
+kafs \- In-kernel AFS filesystem
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SH DESCRIPTION
+.B kafs
+is a network filesystem driver in the Linux kernel that is able to access AFS
+cells and the servers contained therein to locate the logical volumes that
+comprise the cell and the files contained in each volume.
+.P
+It supports transport over IPv4 UDP and IPv6 UDP and security based on
+Kerberos.  The authentication token is used to define the user for the purpose
+of providing access control as well as providing communications security.
+.P
+The filesystem is of type "afs" and the mount command can be used to mount afs
+volumes manually using the "-t" flag on
+.BR mount (8).
+
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SH SETTING UP
+The \fBkafs-client\fP package should be installed to so that systemd is
+configured to include a mount of AFS dynamic root on /afs.  Note that mounting
+/afs is not enabled by default, so if it is needed, then \fIsystemd\fP should
+be told to enable it.  This can be done with the following step:
+.P
+.RS
+.nf
+systemctl enable afs.mount
+.fi
+.RE
+.P
+This will mount a special directory on \fB/afs\fR which will be populated by
+an automount directory for each cell listed in the configuration.  Doing a
+pathwalk into one of these directories will result in the \fBafs.cell\fR
+volume from the cell being mounted onto that directory.
+.P
+Local configuration should be placed in a file in the /etc/kafs/client.d/
+directory.  This will be included from client.conf in the next directory up.
+.P
+Typically in the local configuration, the local cell name would be specified
+and backup details of its Volume Location server addresses would be given.
+.P
+Also any overrides for the @sys filename substitution would be specified.  See
+.BR kafs\-client.conf (5).
+
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SH OPERATION
+Once the kafs-client is set up (and if there's no local cell, this is
+practically zero-conf, provided the cells to be accessed are properly set up
+with AFSDB or SRV records in the DNS), the /afs directory can be accessed:
+.P
+.RS
+.nf
+ls /afs/<cell>/location/within/cell
+.fi
+.RE
+.P
+For example:
+.P
+.RS
+.nf
+ls /afs/rivendell.example.com/doc
+.fi
+.RE
+.P
+The user isn't limited to cells listed in /afs, but any cell can be tried by
+just substituting the name of the cell into the above formula.  It does
+require the target to have DNS-based configuration provided.
+.P
+Note that each logical volume gets a discrete superblock and links between
+volumes turn into kernel mountpoints that, if stepped on, cause the
+appropriate volume to be mounted over them.
+
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SH SECURITY
+.P
+kafs supports Kerberos-based authentication and communication encryption
+through the use of Kerberos.  The \fBkinit\fP program can be use to
+authenticate with a Kerberos server:
+.P
+.RS
+.nf
+kinit myname@RIVENDELL.EXAMPLE.COM
+.fi
+.RE
+.P
+and then the \fBaklog-kafs\fP program to get a ticket for the kernel
+filesystem to use:
+.P
+.RS
+.nf
+aklog-kafs rivendell.example.com
+.fi
+.RE
+.P
+This will be placed on the caller's session keyring and can be viewed there
+with:
+.P
+.RS
+.nf
+keyctl show
+.fi
+.RE
+.P
+Note that the default realm is assumed to be the same as the cell name, but in
+all upper case.
+
+
+
+
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SH SEE ALSO
+.ad l
+.nh
+.BR aklog\-kafs (1),
+.BR kafs\-client.conf (5),
+.BR keyctl (1),
+.BR kinit (1),
+.BR rxrpc (7),
+.BR session\-keyring (7),
+.BR systemctl (1)

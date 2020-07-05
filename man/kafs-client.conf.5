@@ -1,0 +1,257 @@
+.\" -*- nroff -*-
+.\" Copyright (C) 2019 Red Hat, Inc. All Rights Reserved.
+.\" Written by David Howells (dhowells@redhat.com)
+.\"
+.\" This program is free software; you can redistribute it and/or
+.\" modify it under the terms of the GNU General Public License
+.\" as published by the Free Software Foundation; either version
+.\" 2 of the License, or (at your option) any later version.
+.\"
+.TH KAFS-CLIENT.CONF 5 "17 Apr 2019" Linux "kAFS Configuration"
+.SH NAME
+/etc/kafs/client.conf
+.br
+/etc/kafs/client.d/ \- kAFS filesystem configuration
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SH DESCRIPTION
+Configuration information for the in-kernel kAFS filesystem can be provided in
+the /etc/kafs/ directory.  This may include the following:
+.IP
+- A list of cells to be preconfigured
+.IP
+- Fallback addresses for each cell.
+.IP
+- The name of the default cell (the
+.B @cell
+substitution).
+.IP
+- A list of strings for the
+.BR @sys " substitution."
+.PP
+When the
+.B afs.mount
+service is started by
+.BR systemd (1),
+a configuration service
+.RB ( kafs-config.service )
+runs first and loads the configuration into the kernel from the
+.B client.conf
+file.  This contains directives to include other things, such as the contents
+of the
+.B client.d/
+directory and the generic public cell database.
+.PP
+Once the afs.mount service is started (or if an AFS volume is manually
+mounted), if a mountpoint is triggered, the kernel will upcall by means of
+.BR request-key (8)
+to look up addresses for the Volume Location servers for the named cell.  This
+will also parse the configuration.
+
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SH CONFIGURATION FILE FORMAT
+The file format is based on the MIT Kerberos configuration file format.  There
+are a couple of general directives:
+.TP
+.BR include " " /path/to/file
+This includes the contents of the named file in the parse at this point.
+.TP
+.BR includedir " " /path/to/dir/
+This includes the files in the named directory in the parse at this point.
+Files that have names beginning with "." or ending with "~" are ignored.
+.PP
+Leading and trailing whitespace on a line is ignored.  Any line otherwise
+beginning with a "#" character is considered a comment and ignored.
+.PP
+Any line that contains a label bounded by square brackets, e.g. "[cells]", by
+itself on that line denotes a switch to the section specified by that label.
+.PP
+Configuration data is specified within a named section as a series of
+.BR key = value
+pairs, where a value may be one of nothing, an unquoted string, a quoted
+string or a braced lists containing further key=value pairs.  Whitespace
+either side of the "=" symbol is ignored.
+.PP
+For example:
+.PP
+.RS
+.nf
+[cells]
+rivendell.example.com = {
+	description = "Last Homely Cell"
+	use_dns = yes
+	servers = {
+		elrond.rivendell.example.com = {
+			address = 192.0.2.23
+		}
+	}
+}
+.fi
+.RE
+.PP
+If two or more consecutive clauses specify values for the same key sequence
+(so cells:rivendell.example.com:use_dns, for example), then they are merged
+together to form a single list.  If a single value is expected for a
+configuration item, the last element in the list is taken.
+.PP
+To prevent overriding by subsequent conflicting configuration, an asterisk can
+be placed after the closing brace in a braced list to indicate that that list
+is closed, for example:
+.PP
+.RS
+.nf
+[cells]
+rivendell.example.com = {
+	description = "Foo"
+	use_dns = no
+}*
+.fi
+.RE
+.PP
+Strings that are intepreted as boolean values are classed as false if they
+match one of
+.BR 0 ", " f ", " false ", " n ", " no " or " off ,
+and classed as true if they match one off
+.BR 1 ", " t ", " true ", " y ", " yes " or " on .
+The match is case-independent.
+
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SH GENERAL SETTINGS
+The first section contains general system-level settings shared between all
+utilities and the kernel.  This is denoted by the section label
+"\fB[defaults]\fP".
+.PP
+The system settings that may be changed are configured in this section with
+the following key-value pairs:
+.TP
+.B thiscell = <cellname>
+This sets the name of the local cell.  This will be used to configure the
+.B @cell
+path substitution and will also supply the default cellname for
+.BR aklog-kafs (1).
+.TP
+.B sysname = [<systype>]*
+This specifies a (potentially empty) list of strings which the kernel should
+attempt to substitute in turn for "\fB@sys\fR" at the end of a filename until
+a match is found.
+
+
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SH CELL DEFINITIONS
+The second section contains a list of preconfigured cells, to be used in
+preloading the cell list in /afs and also to provide fallback or override
+address data for locating Volume Location servers.  This is denoted by the
+section label "\fB[cells]\fP".
+.PP
+Within the cell list, each cell is declared with a key=value pair, where the
+key is the name of the cell and the value is a braced list indicating the
+details, e.g.:
+.PP
+.RS
+.nf
+.B [cells]
+rivendell.example.com = {
+	...
+}
+.fi
+.RE
+.PP
+A cell definition may contain any number of key=value pairs.  The keys that
+are taken note of are:
+.TP
+.BR description " = " <string>
+This is a text description for the cell.
+.TP
+.BR show_cell " = " <boolean>
+Whether a cell should be shown in /afs.
+.TP
+.BR use_dns " = " <boolean>
+Whether address look ups for a cell may use the DNS.
+.TP
+.BR kerberos_realm " = " <string>
+The name of the Kerberos realm to use for a cell by default.
+.TP
+.BR servers " = " { " ... " }
+A list of servers for the cell, where each element in the list is a key=value
+pair, where the key is the name of a server and the value is a braced section
+of the details for that server.
+.PP
+The elements in the list of server details attached to each server can
+comprise the following keys:
+.TP
+.B type = vlserver
+The server is an AFS Volume Location server.  This is the default.
+.TP
+.B type = ptserver
+The server is an AFS Protection server.
+.TP
+.BR address " = " [<protocol>/]<address>[:<port>]
+Specify a single address for a server.  The
+.B address
+is required and can be a single IPv4 or a single IPv6 address, and may be
+brackets with square brackets (to avoid confusion with the port number, if
+specified).  The
+.B protocol
+is optional; currently only
+.B udp
+is supported.  The
+.B port
+is also optional and may be specified to change the UDP port from the default
+for the server type.
+
+
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SH EXAMPLE
+.PP
+.nf
+.B [defaults]
+thiscell = rivendell.example.com
+sysname = fedora28_x86 amd64_linux
+
+.B [cells]
+corp.example.com = {
+	description = "Valinor Corporation cell"
+	use_dns = yes
+	servers = {
+		manwe.corp.example.com = {
+			address = 2001:db8:123::13
+			address = 203.0.113.19
+		}
+		ulmo.corp.example.com = {
+			address = [2001:db8:123::750c:1234]:6666
+			address = 203.0.113.3:6666
+		}
+		aule.corp.example.com = {
+			address = udp/[2001:db8:123::abcd:9090]
+			address = udp/203.0.113.189
+		}
+		namo.corp.example.com = {
+			type = ptserver
+			address = 2001:db8:123::8888
+			address = 203.0.113.88
+		}
+	}
+}
+
+rivendell.example.com = {
+	description = "Last Homely Cell"
+	servers = {
+		elrond.rivendell.example.com = {
+			address = 192.0.2.23
+		}
+		arwen.rivendell.example.com = {
+			address = 192.0.2.75
+		}
+	}
+}
+.fi
+.PP
+
+
+
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SH SEE ALSO
+.ad l
+.nh
+.BR kafs (7),
+.BR kafs\-check\-config (8),
+.BR systemd (1)

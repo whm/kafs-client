@@ -1,0 +1,13 @@
+[Unit]
+Description=kAFS Dynamic Root mount
+ConditionPathExists=/afs
+Wants=kafs-config.service
+
+[Mount]
+What=none
+Where=/afs
+Type=afs
+Options=_netdev,dyn
+
+[Install]
+WantedBy=remote-fs.target

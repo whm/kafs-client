@@ -1,0 +1,273 @@
+.\"
+.\" Copyright (C) 2019 Red Hat, Inc. All Rights Reserved.
+.\" Written by David Howells (dhowells@redhat.com)
+.\"
+.\" This program is free software; you can redistribute it and/or
+.\" modify it under the terms of the GNU General Public License
+.\" as published by the Free Software Foundation; either version
+.\" 2 of the License, or (at your option) any later version.
+.\"
+.TH AF_RXRPC 7 "16 Apr 2019" "Linux" "Linux Programmer's Manual"
+.SH NAME
+rxrpc \- Linux RxRPC (AFS) protocol implementation
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SH SYNOPSIS
+.B #include <sys/socket.h>
+.br
+.B #include <linux/rxrpc.h>
+.PP
+.IB socket " = socket(AF_RXRPC, SOCK_DGRAM, PF_INET);"
+.br
+.IB socket " = socket(AF_RXRPC, SOCK_DGRAM, PF_INET6);"
+
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SH DESCRIPTION
+Linux optionally implements the RxRPC transport protocol, as used by the AFS
+network filesystem.  Both client and server ends are support - even on the same
+socket - and authentication is supported at both ends.
+.P
+This can be used through the BSD socket interface, using the
+.BR sendmsg "(2) and " recvmsg (2)
+system calls with control data to multiplex calls over the socket and to
+provide or retrieve call metadata.
+.BR request_key (2)
+is used to find the authentication keys to use in the calling process's
+keyrings.
+.P
+The AF_RXRPC driver uses \fBudp\fR(7) sockets underneath, either IPv4-only or
+IPv6 (with IPv4), for transport.  Under certain circumstances, the underlying
+transport sockets may be shared between client-only sockets (but are never
+shared if a socket is implementing a server).
+.P
+
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SS Address format
+.in +4n
+.EX
+struct sockaddr_rxrpc {
+    sa_family_t     srx_family;     /* AF_RXRPC */
+    uint16_t        srx_service;    /* The service identifier */
+    uint16_t        transport_type; /* The type of transport */
+    uint16_t        transport_len;  /* Transport address length */
+    union {
+        sa_family_t family;         /* Transport address family */
+        struct sockaddr_in sin;     /* IPv4 transport address */
+        struct sockaddr_in6 sin6;   /* IPv6 transport address */
+    } transport;
+};
+.EE
+.in
+.PP
+Where
+.I srx_family
+is always set to
+.BR AF_RXRPC ;
+.I srx_service
+is set to the service ID of the desired service;
+.I transport_type
+is set to the transport type, which is always
+.B SOCK_DGRAM
+for now;
+.I transport_len
+says how big the address in
+.I transport
+is.
+.P
+Inside the transport address part, and appropriate address for the underlying
+socket should be set, including things like family, port and address as
+appropriate.  Note that it may be permissible to use IPv4 addresses on an IPv6
+socket.
+.P
+
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SS Socket Options
+AF_RXRPC provides a number of socket options that can be set with
+.BR setsockopt (2)
+and read with
+.BR getsockopt (2).
+The socket option level for IPv6 is
+.BR SOL_RXRPC .
+.TP
+.B RXRPC_SECURITY_KEY
+The option value is a string that specifies the name of a key to pass to
+.BR request_key (2)
+to get an appropriate authentication key.  Such keys are expected to be of
+\fIrxrpc\fR type.
+.IP
+If this isn't set, AF_RXRPC will perform an unauthenticated, unencrypted call
+to the server.
+.TP
+.B RXRPC_SECURITY_KEYRING
+The option value is a string that specifies the name of a keyring to pass to
+.BR request_key (2)
+to specify the keys used by the server end to authenticate connections.
+.IP
+The service keys in the ring should be of type rxrpc_s and their descriptions should be
+of the form "<service-id>:<security-index>" and each should be given an 8-byte secret.
+.TP
+.B RXRPC_EXCLUSIVE_CONNECTION
+The option value should be empty.  This causes each call made on this socket to
+get its own virtual connection and thus its own negotiated security context.
+.TP
+.B RXRPC_MIN_SECURITY_LEVEL
+The option value should be a 4-byte unsigned integer.  This can be one of the
+following constants:
+.BR RXRPC_SECURITY_PLAIN ", " RXRPC_SECURITY_AUTH " or " RXRPC_SECURITY_ENCRYPT ;
+the first indicating the packets should be securely checksummed only, the
+second that packets should be authenticated and the third that full encryption
+should be employed.
+
+.TP
+.B RXRPC_UPGRADEABLE_SERVICE
+The option value should be a 2-slot array of 2-byte unsigned integers.  To use
+this, the socket must be a server socket and must have been bound to more than
+one address with different \fIsrx_service\fP specifiers.
+.IP
+Slot[0] in the array specified the service ID to upgrade from; slot[1]
+specifies the service ID to upgrade to.  This allows a client to find out if
+there's a 'better' version of the service available on the same address, but a
+different service ID.
+.IP
+If the client follows the correct protocol for probing an upgradeable service,
+the kernel will automatically upgrade the service ID on the connection and this
+will be reflected in the address returned by
+.IR recvmsg "(2)."
+.TP
+.B RXRPC_SUPPORTED_CMSG
+The option buffer should have room for a 4-byte integer.  The maximum control
+buffer message type supported by the kernel is written into the buffer.  This
+allows an application to find out what control messages it may use so that it
+can avoid getting an error if it tries to use something unsupported.
+.P
+
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SS Message flags
+AF_RXRPC communicates certain information by way of the message flags passed to
+and received from
+.BR sendmsg "(2) and " recvmsg (2).
+.TP
+.B MSG_MORE
+This is passed to sendmsg() to indicate that there is more data to be
+transmitted as part of the request phase of a client call or the reply phase of
+a service operation.
+.B MSG_EOR
+recvmsg() sets this to indicate that the call has been terminated (the control
+messages must be parsed for information as to why) and that the kernel has
+discarded the user call ID tag.  The tag may now be reused.
+.B MSG_PEEK
+This is passed to recvmsg() to look at the front of the message queue without
+removing any messages or changing the state of any outstanding calls.
+.B MSG_WAITALL
+This is passed to sendmsg() to instruct it not to return for a signal if it is
+still loading up the message queue and progress is being made at the other side
+in emptying it.  This works around the problem of sendmsg() getting interrupted
+after partially queuing its data, but not then being able to return how much it
+has consumed.
+.B MSG_DONTWAIT
+This is passed to recvmsg() to indicate that it shouldn't wait if the message
+queue is empty.
+
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SS Control messages
+AF_RXRPC communicates metadata to the caller through the ancillary data buffer
+(\fImsg_control\fP) in the messages passed to and fro using
+.BR sendmsg "(2) and " recvmsg (2).
+When building a control message buffer for sendmsg(), the RXRPC_SUPPORTED_CMSG
+value should be consulted to make sure that the control message type is
+supported.
+.TP
+.B RXRPC_USER_CALL_ID
+The data for this is an arbitrary long integer/pointer-sized tag that
+represents the call to the kernel.  It may, for example, hold a pointer to some
+userspace structure representing the call to the process.
+.IP
+[sendmsg] This is passed to sendmsg() when the message proposed will create a
+client call.  It must thereafter be included in all future sendmsg() calls
+pertaining to that call.
+.IP
+[recvmsg] recvmsg() includes the tag in all messages pertaining to a call until
+the final termination message is reached - which recvmsg() will mark by setting
+MSG_EOR.
+.TP
+.B RXRPC_ABORT
+The data for this is a 32-bit integer that is the abort code.
+.IP
+[sendmsg] When passed to sendmsg(), this causes the operation matching the tag
+to be aborted; this will be followed up by recvmsg() indicating MSG_EOR and a
+local error of ECONNABORTED, thereby terminating the tag.
+.IP
+[recvmsg] When obtained from recvmsg(), this indicates that a remote abort was
+received from the peer and the data gives the code for that abort.
+.TP
+.B RXRPC_ACK
+[recvmsg] This conveys no data.  It indicates the final acknowledgement to a
+service call has been received.
+.TP
+.B RXRPC_NET_ERROR
+[recvmsg] This conveys a 32-bit integer into which the network error that
+terminated a call will have been placed.
+.TP
+.B RXRPC_BUSY
+[recvmsg] This conveys no data.  It indicates that the operation has been
+rejected because the server is busy.
+.TP
+.B RXRPC_LOCAL_ERROR
+[recvmsg] This conveys a 32-bit integer into which the local error that
+terminated a call will have been placed.
+.TP
+.B RXRPC_NEW_CALL
+[recvmsg] This conveys no data.  It indicates that a new service call has
+arrived at a server socket and is in need of a tag.  RXRPC_ACCEPT is must be
+used for that.
+.TP
+.B RXRPC_ACCEPT
+The data for this is an arbitrary long integer/pointer-sized tag that
+represents the call to the kernel with the same semantics as for
+RXRPC_USER_CALL_ID.
+.IP
+[sendmsg] Supply a user call ID tag to a new service call.
+.TP
+.B RXRPC_EXCLUSIVE_CALL
+[sendmsg] Indicate that this particular call should be made on its own
+connection with an unshared negotiated security context.  This requires no
+additional data.
+.TP
+.B RXRPC_UPGRADE_SERVICE
+[sendmsg] Indicate that this call should attempt to probe the service ID on the
+other side to see if it gets upgraded.  The answer can be found in the
+srx_service value of the peer address recvmsg() returns for this call.  This
+requires no additional data.
+.TP
+.B RXRPC_TX_LENGTH
+The data for this is a signed 64-bit integer.
+.IP
+[sendmsg] Specify the exact total transmit size.  This allows AF_RXRPC to work
+out in advance how big encrypted packets are going to be (under some
+circumstances, there's a data length encrypted inside the packet).
+.IP
+If this is set, it may allow AF_RXRPC to be more efficient at filling packets.
+If the wrong amount of data is given (too little or too much), then the call
+will be aborted.
+.TP
+.B RXRPC_SET_CALL_TIMEOUT
+The data for this is an array of 1-3 32-bit integers.
+.IP
+[sendmsg] Specify various call timeouts.  The first timeout is the \fIhard\fP timeout
+for the call in seconds: the call will be aborted if it takes longer than this
+amount of time in total.
+.IP
+The second timeout is the \fIidle\fP timeout for the call in milliseconds: the
+call will be aborted if we don't receive the next DATA packet within that
+amount of time during the reception phase.
+.IP
+The third timeout is the \fInormal\fP timeout for the call in milliseconds: the
+call will be aborted if we go for that amount of time without receiving any
+type of packet pertaining to the call.
+
+
+.\"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+.SH SEE ALSO
+.ad l
+.nh
+.BR kafs (7),
+.BR request_key (2)

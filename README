@@ -1,0 +1,30 @@
+				  ===========
+				  kAFS CLIENT
+				  ===========
+				   
+Contents:
+
+ (*) Overview.
+
+
+========
+OVERVIEW
+========
+
+The kafs-client package provides the basics for using the kAFS filesystem in
+the Linux kernel.  It provides:
+
+ (*) The aklog-kafs program that can be used to authenticate with Kerberos so
+     that the kAFS filesystem can perform authenticated and encrypted
+     communications with an AFS fileserver.
+
+ (*) A dynamic mount on /afs so that the roots of arbitrary cells can be
+     mounted automatically, using the DNS to look up their details.  This needs
+     to be enabled by:
+
+	systemctl enable afs.mount
+
+     and can then be accessed by referring to cell names in the /afs/
+     directory, for example:
+
+	ls /afs/grand.central.org/
