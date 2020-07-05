@@ -17,6 +17,7 @@ Architecture: any
 Depends:
  ${misc:Depends},
  ${shlibs:Depends},
+ keyutils,
 Description: basic tools for kAFS and mounter for the AFS dynamic root
  kAFS is a Linux kernel implementation of the AFS file system.  This
  package contains the basic AFS-compatible tools for kAFS and systemd
