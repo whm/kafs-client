@@ -110,13 +110,17 @@ int do_preload(const struct kafs_cell_db *db, bool redirect_to_stdout)
 			exit(1);
 		}
 	} else {
-		fd = 1;
+		fd = -1;
 	}
 
 	for (i = 0; i < db->nr_cells; i++) {
 		const struct kafs_cell *cell = db->cells[i];
 
 		n = snprintf(buf, sizeof(buf) - 1, "add %s", cell->name);
+		if (redirect_to_stdout) {
+			printf("WRITE '%s' TO /proc/fs/afs/cells\n", buf);
+			continue;
+		}
 		if (write(fd, buf, n) != n) {
 			if (errno != EEXIST) {
 				_error("Can't add cell '%s': %m", cell->name);
@@ -125,9 +129,6 @@ int do_preload(const struct kafs_cell_db *db, bool redirect_to_stdout)
 
 			verbose("%s: Already exists", cell->name);
 		}
-		if (redirect_to_stdout)
-			if (write(1, "\n", 1) == -1)
-				perror("stdout");
 	}
 
 	if (!redirect_to_stdout) {

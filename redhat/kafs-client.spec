@@ -3,7 +3,7 @@
 %global libapiversion %{libapivermajor}.1
 
 Name:		kafs-client
-Version:	0.4
+Version:	0.5
 Release:	1%{?dist}%{?buildid}
 Summary:	The basic tools for kAFS and mounter for the AFS dynamic root
 License:	GPLv2+
@@ -145,6 +145,14 @@ ln -s aklog-kafs %{buildroot}/%{_bindir}/aklog
 %{_mandir}/man1/aklog.1*
 
 %changelog
+* Thu Jun 18 2020 David Howells <dhowells@redhat.com> 0.5-1
+- kafs-dns: Fix the -V flag.
+- kafs-dns: Fix srv[=N] callout option.
+- Add manpages for kafs-dns and kafs-preload.
+- kafs-preload: Fix the debugging output.
+- kafs-dns: Use the right name in the help output and syslog logging.
+- Rename the etc.conf source to client.conf as that's the installation name
+
 * Wed May 20 2020 David Howells <dhowells@redhat.com> 0.4-1
 - Use AF_ALG rather than OpenSSL's libcrypto.
 - Move the aklog.1 manpage to the -compat rpm.
