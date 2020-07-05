@@ -1,3 +1,10 @@
+kafs-client (0.5-1) unstable; urgency=medium
+
+  * New upstream version.
+  * Adjust patches to match new upstream version.
+
+ -- Bill MacAllister <bill@ca-zephyr.org>  Sun, 05 Jul 2020 08:00:19 +0000
+
 kafs-client (0.4-1) unstable; urgency=medium
 
   * New upstream version that removes the dependency on OpenSSL.
