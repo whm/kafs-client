@@ -1,0 +1,28 @@
+kafs-client (0.5-2) unstable; urgency=medium
+
+  * Remove 0.4 patch files not needed in 0.5.
+  * Add in missing install of the man page for kafs-preload.
+  * Install kafs-dns man page.
+
+ -- Bill MacAllister <bill@ca-zephyr.org>  Sat, 18 Jul 2020 22:13:18 +0000
+
+kafs-client (0.5-1) unstable; urgency=medium
+
+  * New upstream version.
+  * Adjust patches to match new upstream version.
+
+ -- Bill MacAllister <bill@ca-zephyr.org>  Sun, 05 Jul 2020 08:00:19 +0000
+
+kafs-client (0.4-1) unstable; urgency=medium
+
+  * New upstream version that removes the dependency on OpenSSL.
+  * Patches from Russ Allbery to clean up debian build.
+  * Added missing man pages for some executables.
+
+ -- Bill MacAllister <bill@ca-zephyr.org>  Sun, 07 Jun 2020 20:48:04 +0000
+
+kafs-client (0.3-1) unstable; urgency=low
+
+  * Initial release. Closes: #933326
+
+ -- Bill MacAllister <bill@ca-zephyr.org>  Sun, 08 Mar 2020 08:20:23 +0000

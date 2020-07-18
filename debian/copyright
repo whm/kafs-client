@@ -1,0 +1,24 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: kafs-client
+Upstream-Contact: David Howells <dhowells@redhat.com>
+Source: http://git.infradead.org/users/dhowells/kafs-client.git
+
+Files: *
+Copyright: 2018, 2019 David Howells
+  2007, 2017, 2018, 2019 Red Hat, Inc.
+  2008 Chaskiel Grundman
+  2010 Wang Lei <wang840925@gmail.com>
+License: GPL-2+
+
+Files: debian/*
+Copyright: 2020 Bill MacAllister <bill@ca-zephyr.org>
+  2020 Russ Allbery <rra@debian.org>
+License: GPL-2+
+
+License: GPL-2+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+Comment: On Debian systems, you can find a copy of the GNU General Public
+ License version 2 at /usr/share/common-licenses/GPL-2.

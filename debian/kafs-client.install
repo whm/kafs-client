@@ -1,0 +1,13 @@
+src/aklog-kafs        usr/bin
+src/kafs-check-config usr/bin
+#
+src/kafs-preload usr/sbin
+#
+src/kafs-dns     usr/libexec
+#
+conf/cellservdb.conf usr/share/kafs-client
+conf/client.conf     etc/kafs
+#
+conf/kafs_dns.conf etc/request-key.d
+#
+conf/cellservdb.conf usr/share/kafs

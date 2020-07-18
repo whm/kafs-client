@@ -1,0 +1,14 @@
+kafs-client for Debian
+
+This is a Debian packaging of David Howell's kafs client for the
+AFS file system. The packing work was based in part on the work
+of Spencer E. Olson <olsonse@umich.edu>.
+
+The installation is pretty straight forward.
+
+  1. Install the kafs-client and libkafs-client-dev packages.
+  2. Enable the afs.mount unit file.
+  3. Optionally define a default cell and any cells that don't
+     have DNS records.
+
+ -- Bill MacAllister <bill@ca-zephyr.org>, Sun,  1 Mar 2020 09:46:32 +0000
