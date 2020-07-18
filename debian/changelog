@@ -2,8 +2,9 @@ kafs-client (0.5-2) unstable; urgency=medium
 
   * Remove 0.4 patch files not needed in 0.5.
   * Add in missing install of the man page for kafs-preload.
+  * Install kafs-dns man page.
 
- -- Bill MacAllister <bill@ca-zephyr.org>  Sun, 05 Jul 2020 21:12:08 +0000
+ -- Bill MacAllister <bill@ca-zephyr.org>  Sat, 18 Jul 2020 22:13:18 +0000
 
 kafs-client (0.5-1) unstable; urgency=medium
 
