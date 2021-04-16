@@ -16,7 +16,7 @@
  * Kerberos-5 strong enctype support for rxkad:
  *	https://tools.ietf.org/html/draft-kaduk-afs3-rxkad-k5-kdf-00
  *
- * Invoke as: aklog-k5 <cell> [<realm>]
+ * Invoke as: aklog-k5 [-dhv] <cell> [<realm>]
  */
 
 #define _GNU_SOURCE
@@ -32,6 +32,12 @@
 #include <sys/socket.h>
 #include <krb5/krb5.h>
 #include <linux/if_alg.h>
+#include <unistd.h>
+
+// command line switches
+bool opt_debug   = false;
+bool opt_help    = false;
+bool opt_verbose = false;
 
 struct rxrpc_key_sec2_v1 {
         uint32_t        kver;                   /* key payload interface version */
@@ -333,10 +339,21 @@ unset:
 }
 
 /*
+ * Display a short usage message and exit
+ */
+void display_usage ()
+{
+	fprintf(stderr, "Usage: aklog-kafs [-dhv] [<cell> [<realm>]]\n");
+	exit(1);
+}
+
+/*
  *
  */
 int main(int argc, char **argv)
 {
+	int opt;
+
 	char *cell, *realm, *princ, *desc, *p;
 	int ret;
 	size_t plen;
@@ -346,19 +363,38 @@ int main(int argc, char **argv)
 	krb5_ccache cc;
 	krb5_creds search_cred, *creds;
 
-	if (argc < 1 || argc > 3 ||
-	    (argc == 2 && strcmp(argv[1], "--help") == 0)) {
-		fprintf(stderr, "Usage: aklog-kafs [<cell> [<realm>]]\n");
-		exit(1);
+	while ((opt = getopt(argc, argv, "dhv")) != -1) {
+		switch (opt) {
+		case 'd':
+			opt_debug = true;
+			opt_verbose = true;
+			break;
+		case 'h':
+			opt_help = true;
+			break;
+		case 'v':
+			opt_verbose = true;
+			break;
+		default:
+			display_usage();
+		}
 	}
 
-	if (argc == 1)
+	if (argc - optind > 2) {
+		fprintf(stderr, "ERROR: too many arguments\n");
+		display_usage();
+	}
+	if (strcmp(argv[optind], "--help") == 0) {
+		display_usage();
+	}
+
+	if (argc - optind == 1)
 		cell = get_default_cell();
 	else
-		cell = argv[1];
+		cell = argv[optind];
 
-	if (argc == 3) {
-		realm = strdup(argv[2]);
+	if (argc - optind == 2) {
+		realm = strdup(argv[optind + 1]);
 		OSZERROR(realm, "strdup");
 	} else {
 		realm = strdup(cell);
@@ -375,11 +411,16 @@ int main(int argc, char **argv)
 	ret = asprintf(&desc, "afs@%s", cell);
 	OSERROR(ret, "asprintf");
 
-	printf("CELL %s\n", cell);
-	printf("PRINC %s\n", princ);
+	if (opt_verbose) {
+		printf("CELL %s\n", cell);
+		printf("PRINC %s\n", princ);
+	}
 
 	kresult = krb5_init_context(&k5_ctx);
-	if (kresult) { fprintf(stderr, "krb5_init_context failed\n"); exit(1); }
+	if (kresult) {
+		fprintf(stderr, "krb5_init_context failed\n");
+		exit(1);
+	}
 
 	kresult = krb5_cc_default(k5_ctx, &cc);
 	KRBERROR(kresult, "Getting credential cache");
