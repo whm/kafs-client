@@ -1,4 +1,5 @@
 /* aklog.c: description
+ * vim: noet:ts=2:sw=2:tw=80:nowrap
  *
  * Copyright (C) 2017 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
@@ -32,7 +33,6 @@
 #include <sys/socket.h>
 #include <krb5/krb5.h>
 #include <linux/if_alg.h>
-#include <unistd.h>
 
 // command line switches
 bool opt_debug   = false;
@@ -354,6 +354,7 @@ int main(int argc, char **argv)
 {
 	int opt;
 
+	char *cell_scratch;
 	char *cell, *realm, *princ, *desc, *p;
 	int ret;
 	size_t plen;
@@ -388,12 +389,17 @@ int main(int argc, char **argv)
 		display_usage();
 	}
 
-	if (argc - optind == 1)
-		cell = get_default_cell();
-	else
-		cell = argv[optind];
+	if ((argc - optind) <= 0) {
+		cell = cell_scratch = get_default_cell();
+		if (opt_verbose) {
+ 			printf("Cell from /proc/net/afs/rootcell: %s\n", cell);
+ 		}
+ 	} else {
+		cell_scratch = NULL;
+ 		cell = argv[optind];
+ 	}
 
-	if (argc - optind == 2) {
+	if ((argc - optind) > 1) {
 		realm = strdup(argv[optind + 1]);
 		OSZERROR(realm, "strdup");
 	} else {
@@ -461,6 +467,13 @@ int main(int argc, char **argv)
 	ret = add_key("rxrpc", desc, payload, plen, KEY_SPEC_SESSION_KEYRING);
 	OSERROR(ret, "add_key");
 
+	if (cell_scratch) {
+		free(cell_scratch);
+	}
+	free(realm);
+	free(princ);
+	free(desc);
+	free(payload);
 	krb5_free_creds(k5_ctx, creds);
 	krb5_free_cred_contents(k5_ctx, &search_cred);
 	krb5_cc_close(k5_ctx, cc);
