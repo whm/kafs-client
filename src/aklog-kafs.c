@@ -35,7 +35,6 @@
 #include <linux/if_alg.h>
 
 // command line switches
-bool opt_debug   = false;
 bool opt_help    = false;
 bool opt_verbose = false;
 
@@ -343,7 +342,7 @@ unset:
  */
 void display_usage ()
 {
-	fprintf(stderr, "Usage: aklog-kafs [-dhv] [<cell> [<realm>]]\n");
+	fprintf(stderr, "Usage: aklog-kafs [-hv] [<cell> [<realm>]]\n");
 	exit(1);
 }
 
@@ -364,12 +363,8 @@ int main(int argc, char **argv)
 	krb5_ccache cc;
 	krb5_creds search_cred, *creds;
 
-	while ((opt = getopt(argc, argv, "dhv")) != -1) {
+	while ((opt = getopt(argc, argv, "hv")) != -1) {
 		switch (opt) {
-		case 'd':
-			opt_debug = true;
-			opt_verbose = true;
-			break;
 		case 'h':
 			opt_help = true;
 			break;
@@ -408,6 +403,9 @@ int main(int argc, char **argv)
 		for (p = realm; *p; p++)
 			*p = toupper(*p);
 	}
+	if (opt_verbose) {
+ 		printf("Realm: %s\n", realm);
+ 	}
 
 	for (p = cell; *p; p++)
 		*p = tolower(*p);
@@ -466,6 +464,9 @@ int main(int argc, char **argv)
 
 	ret = add_key("rxrpc", desc, payload, plen, KEY_SPEC_SESSION_KEYRING);
 	OSERROR(ret, "add_key");
+	if (opt_verbose) {
+		printf("successfully added key: %d to session keyring\n", ret);
+	}
 
 	if (cell_scratch) {
 		free(cell_scratch);
