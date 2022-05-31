@@ -36,7 +36,7 @@
 
 // command line switches
 bool opt_help    = false;
-bool opt_verbose = false;
+int opt_verbose = 0;
 
 struct rxrpc_key_sec2_v1 {
         uint32_t        kver;                   /* key payload interface version */
@@ -342,7 +342,14 @@ unset:
  */
 void display_usage ()
 {
-	fprintf(stderr, "Usage: aklog-kafs [-hv] [<cell> [<realm>]]\n");
+	fprintf(stderr,
+		"Usage: \n"
+		" aklog-kafs [OPTIONS] [<cell> [<realm>]]\n"
+		"\n"
+		"Options:\n"
+		" -h    display this help and exit\n"
+		" -v    increase verbosity with each instance of this argument\n"
+	);
 	exit(1);
 }
 
@@ -369,7 +376,7 @@ int main(int argc, char **argv)
 			opt_help = true;
 			break;
 		case 'v':
-			opt_verbose = true;
+			++opt_verbose;
 			break;
 		default:
 			display_usage();
@@ -449,9 +456,11 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	printf("plen=%zu tklen=%u rk=%zu\n",
-	       plen, creds->ticket.length, sizeof(*payload));
-
+	if (opt_verbose >= 2) {
+		printf("plen=%zu tklen=%u rk=%zu\n",
+			plen, creds->ticket.length, sizeof(*payload));
+	}
+    
 	/* use version 1 of the key data interface */
 	payload->kver           = 1;
 	payload->security_index = 2;
