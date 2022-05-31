@@ -340,7 +340,7 @@ unset:
 /*
  * Display a short usage message and exit
  */
-void display_usage ()
+void display_usage (int exit_status)
 {
 	fprintf(stderr,
 		"Usage: \n"
@@ -356,7 +356,7 @@ void display_usage ()
 		"       automatically switching to the uid-session keyring.\n"
 		" -V    Show version and exit\n"
 	);
-	exit(1);
+	exit(exit_status);
 }
 
 /*
@@ -382,7 +382,7 @@ int main(int argc, char **argv)
 	while ((opt = getopt(argc, argv, "hvVk:")) != -1) {
 		switch (opt) {
 		case 'h':
-			opt_help = true;
+			display_usage(EXIT_SUCCESS);
 			break;
 		case 'k':
 			if (strcmp(optarg, "session") == 0)
@@ -390,7 +390,7 @@ int main(int argc, char **argv)
 			else if (strcmp(optarg, "uid-session") == 0)
 				dest_keyring = KEY_SPEC_USER_SESSION_KEYRING;
 			else
-				display_usage();
+				display_usage(EXIT_FAILURE);
 			break;
 		case 'v':
 			++opt_verbose;
@@ -399,16 +399,16 @@ int main(int argc, char **argv)
 			printf("kAFS client: %s\n", VERSION);
 			exit(0);
 		default:
-			display_usage();
+			display_usage(EXIT_SUCCESS);
 		}
 	}
 
 	if (argc - optind > 2) {
 		fprintf(stderr, "ERROR: too many arguments\n");
-		display_usage();
+		display_usage(EXIT_FAILURE);
 	}
 	if (strcmp(argv[optind], "--help") == 0) {
-		display_usage();
+		display_usage(EXIT_SUCCESS);
 	}
 
 	if ((argc - optind) <= 0) {
