@@ -7,7 +7,7 @@ Build-Depends:
  libkrb5-dev
 Rules-Requires-Root: no
 Maintainer: Bill MacAllister <bill@ca-zephyr.org>
-Standards-Version: 4.5.0
+Standards-Version: 4.6.0
 Homepage: https://www.infradead.org/~dhowells/kafs/
 Vcs-Git: https://github.com/whm/kafs-client.git
 Vcs-Browser: https://github.com/whm/kafs-client

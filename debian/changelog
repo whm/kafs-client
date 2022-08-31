@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 kafs-client (0.5-3) unstable; urgency=medium
 
   * Patches from Spencer Olson <olsonse.umich.edu>.
@@ -9,6 +10,7 @@ kafs-client (0.5-3) unstable; urgency=medium
     - make display_usage use proper exit status
   * Patches from Debian Janitor <janitor@jelmer.uk>  
     - Use canonical URL in Vcs-Git.
+    - Update standards version to 4.6.0, no changes needed.
 
  -- Bill MacAllister <bill@ca-zephyr.org>  Sun, 11 Dec 2022 01:25:19 +0000
 
