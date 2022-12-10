@@ -8,11 +8,11 @@ Signed-off-by: Spencer E. Olson <olsonse@umich.edu>
  src/aklog-kafs.c | 6 +++++-
  1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/src/aklog-kafs.c b/src/aklog-kafs.c
-index 7776f9b..fd176d9 100644
---- a/src/aklog-kafs.c
-+++ b/src/aklog-kafs.c
-@@ -353,6 +353,7 @@ void display_usage ()
+Index: kafs-client/src/aklog-kafs.c
+===================================================================
+--- kafs-client.orig/src/aklog-kafs.c	2022-12-10 23:39:14.840847958 +0000
++++ kafs-client/src/aklog-kafs.c	2022-12-10 23:39:14.828847380 +0000
+@@ -354,6 +354,7 @@
  		"         uid-session\n"
  		"       Otherwise, a session keyring will be used first if found before \n"
  		"       automatically switching to the uid-session keyring.\n"
@@ -20,25 +20,22 @@ index 7776f9b..fd176d9 100644
  	);
  	exit(1);
  }
-@@ -377,7 +378,7 @@ int main(int argc, char **argv)
+@@ -378,7 +379,7 @@
  
  	dest_keyring = 0;
  
 -	while ((opt = getopt(argc, argv, "hvk:")) != -1) {
 +	while ((opt = getopt(argc, argv, "hvVk:")) != -1) {
  		switch (opt) {
+ 		case 'h':
+ 			opt_help = true;
+@@ -394,6 +395,9 @@
  		case 'v':
  			++opt_verbose;
-@@ -390,6 +391,9 @@ int main(int argc, char **argv)
- 			else
- 				display_usage();
  			break;
 +		case 'V':
 +			printf("kAFS client: %s\n", VERSION);
 +			exit(0);
  		default:
- 		case 'h':
  			display_usage();
--- 
-2.30.2
-
+ 		}

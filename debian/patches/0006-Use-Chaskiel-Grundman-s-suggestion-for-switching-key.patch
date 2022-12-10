@@ -17,11 +17,11 @@ Signed-off-by: Spencer E. Olson <olsonse@umich.edu>
  src/aklog-kafs.c | 66 +++++++++++++++++++++++++++++++++++++++++++++---
  1 file changed, 63 insertions(+), 3 deletions(-)
 
-diff --git a/src/aklog-kafs.c b/src/aklog-kafs.c
-index a874f7b..7776f9b 100644
---- a/src/aklog-kafs.c
-+++ b/src/aklog-kafs.c
-@@ -348,6 +348,11 @@ void display_usage ()
+Index: kafs-client/src/aklog-kafs.c
+===================================================================
+--- kafs-client.orig/src/aklog-kafs.c	2022-12-10 23:34:53.588259178 +0000
++++ kafs-client/src/aklog-kafs.c	2022-12-10 23:36:15.564209282 +0000
+@@ -349,6 +349,11 @@
  		"Options:\n"
  		" -h    display this help and exit\n"
  		" -v    increase verbosity with each instance of this argument\n"
@@ -33,7 +33,7 @@ index a874f7b..7776f9b 100644
  	);
  	exit(1);
  }
-@@ -364,16 +369,27 @@ int main(int argc, char **argv)
+@@ -365,16 +370,27 @@
  	int ret;
  	size_t plen;
  	struct rxrpc_key_sec2_v1 *payload;
@@ -48,8 +48,8 @@ index a874f7b..7776f9b 100644
 +
 +	while ((opt = getopt(argc, argv, "hvk:")) != -1) {
  		switch (opt) {
- 		case 'v':
- 			++opt_verbose;
+ 		case 'h':
+ 			opt_help = true;
  			break;
 +		case 'k':
 +			if (strcmp(optarg, "session") == 0)
@@ -59,10 +59,10 @@ index a874f7b..7776f9b 100644
 +			else
 +				display_usage();
 +			break;
- 		default:
- 		case 'h':
- 			display_usage();
-@@ -465,10 +481,54 @@ int main(int argc, char **argv)
+ 		case 'v':
+ 			++opt_verbose;
+ 			break;
+@@ -471,10 +487,54 @@
  	derive_key(creds, payload->session_key);
  	memcpy(payload->ticket, creds->ticket.data, creds->ticket.length);
  
@@ -119,6 +119,3 @@ index a874f7b..7776f9b 100644
  	}
  
  	if (cell_scratch) {
--- 
-2.30.2
-
