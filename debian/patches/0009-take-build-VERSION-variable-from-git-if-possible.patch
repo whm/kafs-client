@@ -1,0 +1,31 @@
+From b54064cd6b15493c428fc5270a9e881045153500 Mon Sep 17 00:00:00 2001
+From: "Spencer E. Olson" <olsonse@umich.edu>
+Date: Tue, 31 May 2022 05:59:16 -0600
+Subject: [PATCH 8/8] take build VERSION variable from git if possible
+
+Signed-off-by: Spencer E. Olson <olsonse@umich.edu>
+---
+ src/Makefile.config | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/src/Makefile.config b/src/Makefile.config
+index 7f4004a..0735a3e 100644
+--- a/src/Makefile.config
++++ b/src/Makefile.config
+@@ -18,7 +18,12 @@ LNS		:= ln -sf
+ # Determine the current package version from the specfile
+ #
+ ###############################################################################
+-VERSION		:= $(word 2,$(shell grep "^Version:" $(SPECFILE)))
++GIT_VERSION	= $(shell git describe 2> /dev/null | sed -e "s!^v!!" -e "s!-g[a-f0-9]*\$$!!")
++ifneq (${GIT_VERSION},)
++  #$(info $$GIT_VERSION is [${GIT_VERSION}])
++  VERSION	:= ${GIT_VERSION}
++endif
++VERSION		?= $(word 2,$(shell grep "^Version:" $(SPECFILE)))
+ CPPFLAGS	+= -DVERSION="\"$(VERSION)\""
+ 
+ ###############################################################################
+-- 
+2.30.2
+

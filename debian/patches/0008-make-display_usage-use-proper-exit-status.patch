@@ -1,0 +1,60 @@
+From ae1cd01d1d416a5de70a7a077b6a44f50d89a350 Mon Sep 17 00:00:00 2001
+From: "Spencer E. Olson" <olsonse@umich.edu>
+Date: Tue, 31 May 2022 05:56:25 -0600
+Subject: [PATCH 7/8] make display_usage use proper exit status
+
+Signed-off-by: Spencer E. Olson <olsonse@umich.edu>
+---
+ src/aklog-kafs.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/src/aklog-kafs.c b/src/aklog-kafs.c
+index fd176d9..3da6797 100644
+--- a/src/aklog-kafs.c
++++ b/src/aklog-kafs.c
+@@ -339,7 +339,7 @@ unset:
+ /*
+  * Display a short usage message and exit
+  */
+-void display_usage ()
++void display_usage (int exit_status)
+ {
+ 	fprintf(stderr,
+ 		"Usage: \n"
+@@ -355,7 +355,7 @@ void display_usage ()
+ 		"       automatically switching to the uid-session keyring.\n"
+ 		" -V    Show version and exit\n"
+ 	);
+-	exit(1);
++	exit(exit_status);
+ }
+ 
+ /*
+@@ -389,20 +389,21 @@ int main(int argc, char **argv)
+ 			else if (strcmp(optarg, "uid-session") == 0)
+ 				dest_keyring = KEY_SPEC_USER_SESSION_KEYRING;
+ 			else
+-				display_usage();
++				display_usage(EXIT_FAILURE);
+ 			break;
+ 		case 'V':
+ 			printf("kAFS client: %s\n", VERSION);
+ 			exit(0);
+ 		default:
++			display_usage(EXIT_FAILURE);
+ 		case 'h':
+-			display_usage();
++			display_usage(EXIT_SUCCESS);
+ 		}
+ 	}
+ 
+ 	if ((argc - optind) > 2) {
+ 		fprintf(stderr, "ERROR: unexpected arguments after options\n");
+-		display_usage();
++		display_usage(EXIT_FAILURE);
+ 	}
+ 
+ 	if ((argc - optind) <= 0) {
+-- 
+2.30.2
+

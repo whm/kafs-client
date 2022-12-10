@@ -1,0 +1,44 @@
+From 2767088c4623fd9fffb9933f62161206eeda62ba Mon Sep 17 00:00:00 2001
+From: "Spencer E. Olson" <olsonse@umich.edu>
+Date: Tue, 31 May 2022 05:53:41 -0600
+Subject: [PATCH 6/8] add commandline option to show build version
+
+Signed-off-by: Spencer E. Olson <olsonse@umich.edu>
+---
+ src/aklog-kafs.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/aklog-kafs.c b/src/aklog-kafs.c
+index 7776f9b..fd176d9 100644
+--- a/src/aklog-kafs.c
++++ b/src/aklog-kafs.c
+@@ -353,6 +353,7 @@ void display_usage ()
+ 		"         uid-session\n"
+ 		"       Otherwise, a session keyring will be used first if found before \n"
+ 		"       automatically switching to the uid-session keyring.\n"
++		" -V    Show version and exit\n"
+ 	);
+ 	exit(1);
+ }
+@@ -377,7 +378,7 @@ int main(int argc, char **argv)
+ 
+ 	dest_keyring = 0;
+ 
+-	while ((opt = getopt(argc, argv, "hvk:")) != -1) {
++	while ((opt = getopt(argc, argv, "hvVk:")) != -1) {
+ 		switch (opt) {
+ 		case 'v':
+ 			++opt_verbose;
+@@ -390,6 +391,9 @@ int main(int argc, char **argv)
+ 			else
+ 				display_usage();
+ 			break;
++		case 'V':
++			printf("kAFS client: %s\n", VERSION);
++			exit(0);
+ 		default:
+ 		case 'h':
+ 			display_usage();
+-- 
+2.30.2
+

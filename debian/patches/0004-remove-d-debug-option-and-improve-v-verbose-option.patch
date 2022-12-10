@@ -1,0 +1,75 @@
+From 04bbe4091f3383390aa62b0f1de5f0f2a2f131e3 Mon Sep 17 00:00:00 2001
+From: "Spencer E. Olson" <olsonse@umich.edu>
+Date: Sat, 28 May 2022 15:22:43 -0600
+Subject: [PATCH 3/8] remove -d (debug) option and improve -v (verbose) option
+
+Signed-off-by: Spencer E. Olson <olsonse@umich.edu>
+---
+ src/aklog-kafs.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
+
+diff --git a/src/aklog-kafs.c b/src/aklog-kafs.c
+index 01e4763..289f190 100644
+--- a/src/aklog-kafs.c
++++ b/src/aklog-kafs.c
+@@ -35,7 +35,6 @@
+ #include <linux/if_alg.h>
+ 
+ // command line switches
+-bool opt_debug   = false;
+ bool opt_verbose = false;
+ 
+ struct rxrpc_key_sec2_v1 {
+@@ -342,7 +341,7 @@ unset:
+  */
+ void display_usage ()
+ {
+-	fprintf(stderr, "Usage: aklog-kafs [-dhv] [<cell> [<realm>]]\n");
++	fprintf(stderr, "Usage: aklog-kafs [-hv] [<cell> [<realm>]]\n");
+ 	exit(1);
+ }
+ 
+@@ -363,19 +362,14 @@ int main(int argc, char **argv)
+ 	krb5_ccache cc;
+ 	krb5_creds search_cred, *creds;
+ 
+-	while ((opt = getopt(argc, argv, "dhv")) != -1) {
++	while ((opt = getopt(argc, argv, "hv")) != -1) {
+ 		switch (opt) {
+-		case 'd':
+-			opt_debug = true;
++		case 'v':
+ 			opt_verbose = true;
+ 			break;
+ 		default:
+ 		case 'h':
+ 			display_usage();
+-			break;
+-		case 'v':
+-			opt_verbose = true;
+-			break;
+ 		}
+ 	}
+ 
+@@ -403,7 +397,7 @@ int main(int argc, char **argv)
+ 		for (p = realm; *p; p++)
+ 			*p = toupper(*p);
+ 	}
+-	if (opt_debug) {
++	if (opt_verbose) {
+ 		printf("Realm: %s\n", realm);
+ 	}
+ 
+@@ -466,6 +460,9 @@ int main(int argc, char **argv)
+ 
+ 	ret = add_key("rxrpc", desc, payload, plen, KEY_SPEC_SESSION_KEYRING);
+ 	OSERROR(ret, "add_key");
++	if (opt_verbose) {
++		printf("successfully added key: %d to session keyring\n", ret);
++	}
+ 
+ 	if (cell_scratch) {
+ 		free(cell_scratch);
+-- 
+2.30.2
+

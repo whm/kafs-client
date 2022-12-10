@@ -1,0 +1,124 @@
+From 91cccc59c60ebfc4f80650f1c6755951a8f648ec Mon Sep 17 00:00:00 2001
+From: "Spencer E. Olson" <olsonse@umich.edu>
+Date: Tue, 31 May 2022 05:11:54 -0600
+Subject: [PATCH 5/8] Use Chaskiel Grundman's suggestion for switching keyrings
+
+If the session keyring is not found, this patch now automatically causes
+the UID session keyring to be used.
+
+This patch also allows the user to explicitly specify the keyring to use
+with an error occuring if the specified keyring does not exist.
+
+This patch also allows increased verbosity pertaining to the keyring
+selection.
+
+Signed-off-by: Spencer E. Olson <olsonse@umich.edu>
+---
+ src/aklog-kafs.c | 66 +++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 63 insertions(+), 3 deletions(-)
+
+diff --git a/src/aklog-kafs.c b/src/aklog-kafs.c
+index a874f7b..7776f9b 100644
+--- a/src/aklog-kafs.c
++++ b/src/aklog-kafs.c
+@@ -348,6 +348,11 @@ void display_usage ()
+ 		"Options:\n"
+ 		" -h    display this help and exit\n"
+ 		" -v    increase verbosity with each instance of this argument\n"
++		" -k    manually specify keyring to add AFS key into:\n"
++		"         session\n"
++		"         uid-session\n"
++		"       Otherwise, a session keyring will be used first if found before \n"
++		"       automatically switching to the uid-session keyring.\n"
+ 	);
+ 	exit(1);
+ }
+@@ -364,16 +369,27 @@ int main(int argc, char **argv)
+ 	int ret;
+ 	size_t plen;
+ 	struct rxrpc_key_sec2_v1 *payload;
++	key_serial_t dest_keyring, sessring, usessring;
+ 	krb5_error_code kresult;
+ 	krb5_context k5_ctx;
+ 	krb5_ccache cc;
+ 	krb5_creds search_cred, *creds;
+ 
+-	while ((opt = getopt(argc, argv, "hv")) != -1) {
++	dest_keyring = 0;
++
++	while ((opt = getopt(argc, argv, "hvk:")) != -1) {
+ 		switch (opt) {
+ 		case 'v':
+ 			++opt_verbose;
+ 			break;
++		case 'k':
++			if (strcmp(optarg, "session") == 0)
++				dest_keyring = KEY_SPEC_SESSION_KEYRING;
++			else if (strcmp(optarg, "uid-session") == 0)
++				dest_keyring = KEY_SPEC_USER_SESSION_KEYRING;
++			else
++				display_usage();
++			break;
+ 		default:
+ 		case 'h':
+ 			display_usage();
+@@ -465,10 +481,54 @@ int main(int argc, char **argv)
+ 	derive_key(creds, payload->session_key);
+ 	memcpy(payload->ticket, creds->ticket.data, creds->ticket.length);
+ 
+-	ret = add_key("rxrpc", desc, payload, plen, KEY_SPEC_SESSION_KEYRING);
++	/* if the session keyring is not set (i.e. using the uid session keyring),
++	 * then the kernel will instantiate a new session keyring if any keys are
++	 * added to KEY_SPEC_SESSION_KEYRING! Since we exit immediately, that keyring
++	 * will be orphaned. So, add the key to KEY_SPEC_USER_SESSION_KEYRING in that
++	 * case.
++	 */
++	sessring  = keyctl_get_keyring_ID(KEY_SPEC_SESSION_KEYRING, 0);
++	usessring = keyctl_get_keyring_ID(KEY_SPEC_USER_SESSION_KEYRING, 0);
++	if (opt_verbose >= 2) {
++		printf("session keyring found: %d\n", sessring);
++		printf("uid-session keyring found: %d\n", usessring);
++	}
++
++	if (dest_keyring == 0) {
++		/* attempt to automatically select the correct keyring. */
++		if (sessring == -1 || sessring == usessring)
++			dest_keyring = KEY_SPEC_USER_SESSION_KEYRING;
++		else
++			dest_keyring = KEY_SPEC_SESSION_KEYRING;
++	} else {
++		if (keyctl_get_keyring_ID(dest_keyring, 0) == -1 ||
++		    (dest_keyring == KEY_SPEC_SESSION_KEYRING &&
++		     sessring == usessring)) {
++			fprintf(stderr, "Could not find requested keyring\n");
++			exit(EXIT_FAILURE);
++		}
++	}
++
++	if (dest_keyring != KEY_SPEC_SESSION_KEYRING &&
++	    dest_keyring != KEY_SPEC_USER_SESSION_KEYRING) {
++		fprintf(stderr, "using unknown keyring (%d)\n", dest_keyring);
++		exit(EXIT_FAILURE);
++	} else if (opt_verbose >= 2) {
++		if (dest_keyring == KEY_SPEC_SESSION_KEYRING)
++			printf("using session keyring (%d)\n", dest_keyring);
++		else if (dest_keyring == KEY_SPEC_USER_SESSION_KEYRING)
++			printf("using uid-session keyring (%d)\n", dest_keyring);
++	}
++
++	ret = add_key("rxrpc", desc, payload, plen, dest_keyring);
+ 	OSERROR(ret, "add_key");
+ 	if (opt_verbose) {
+-		printf("successfully added key: %d to session keyring\n", ret);
++		if (dest_keyring == KEY_SPEC_SESSION_KEYRING)
++			printf("successfully added key: %d to session keyring\n", ret);
++		else if (dest_keyring == KEY_SPEC_USER_SESSION_KEYRING)
++			printf("successfully added key: %d to uid-session keyring\n", ret);
++		else
++			printf("successfully added key: %d to an unknown keyring\n", ret);
+ 	}
+ 
+ 	if (cell_scratch) {
+-- 
+2.30.2
+

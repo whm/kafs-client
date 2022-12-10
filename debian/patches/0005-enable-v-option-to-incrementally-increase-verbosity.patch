@@ -1,0 +1,60 @@
+From 397420ff8e55c56006e68c11b663331e6240c1c2 Mon Sep 17 00:00:00 2001
+From: "Spencer E. Olson" <olsonse@umich.edu>
+Date: Tue, 31 May 2022 05:10:28 -0600
+Subject: [PATCH 4/8] enable -v option to incrementally increase verbosity
+
+Signed-off-by: Spencer E. Olson <olsonse@umich.edu>
+---
+ src/aklog-kafs.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/src/aklog-kafs.c b/src/aklog-kafs.c
+index 289f190..a874f7b 100644
+--- a/src/aklog-kafs.c
++++ b/src/aklog-kafs.c
+@@ -35,7 +35,7 @@
+ #include <linux/if_alg.h>
+ 
+ // command line switches
+-bool opt_verbose = false;
++int opt_verbose = 0;
+ 
+ struct rxrpc_key_sec2_v1 {
+         uint32_t        kver;                   /* key payload interface version */
+@@ -341,7 +341,14 @@ unset:
+  */
+ void display_usage ()
+ {
+-	fprintf(stderr, "Usage: aklog-kafs [-hv] [<cell> [<realm>]]\n");
++	fprintf(stderr,
++		"Usage: \n"
++		" aklog-kafs [OPTIONS] [<cell> [<realm>]]\n"
++		"\n"
++		"Options:\n"
++		" -h    display this help and exit\n"
++		" -v    increase verbosity with each instance of this argument\n"
++	);
+ 	exit(1);
+ }
+ 
+@@ -365,7 +372,7 @@ int main(int argc, char **argv)
+ 	while ((opt = getopt(argc, argv, "hv")) != -1) {
+ 		switch (opt) {
+ 		case 'v':
+-			opt_verbose = true;
++			++opt_verbose;
+ 			break;
+ 		default:
+ 		case 'h':
+@@ -443,7 +450,7 @@ int main(int argc, char **argv)
+ 		exit(1);
+ 	}
+ 
+-	if (opt_verbose) {
++	if (opt_verbose >= 2) {
+ 		printf("plen=%zu tklen=%u rk=%zu\n",
+ 			plen, creds->ticket.length, sizeof(*payload));
+ 	}
+-- 
+2.30.2
+

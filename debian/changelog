@@ -1,3 +1,16 @@
+kafs-client (0.5-3) unstable; urgency=medium
+
+  * Apply patches from Spencer Olson <olsonse.umich.edu>.
+    - update aklog kafs.c from Bill MacAllister's debian patch
+    - Fix minimal command line argument parsing
+    - remove -d debug option and improve -v verbose option
+    - enable -v option to incrementally increase verbosity
+    - Use Chaskiel Grundman s suggestion for switching key
+    - add commandline option to show build version
+    - make display_usage use proper exit status
+
+ -- Bill MacAllister <bill@ca-zephyr.org>  Sat, 10 Dec 2022 22:27:49 +0000
+
 kafs-client (0.5-2) unstable; urgency=medium
 
   * Remove 0.4 patch files not needed in 0.5.
