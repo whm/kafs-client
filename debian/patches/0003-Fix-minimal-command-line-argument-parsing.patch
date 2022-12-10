@@ -11,10 +11,10 @@ Signed-off-by: Spencer E. Olson <olsonse@umich.edu>
  src/aklog-kafs.c | 31 +++++++++++++++++--------------
  1 file changed, 17 insertions(+), 14 deletions(-)
 
-diff --git a/src/aklog-kafs.c b/src/aklog-kafs.c
-index 16aa9a9..01e4763 100644
---- a/src/aklog-kafs.c
-+++ b/src/aklog-kafs.c
+Index: kafs-client/src/aklog-kafs.c
+===================================================================
+--- kafs-client.orig/src/aklog-kafs.c	2022-12-10 23:03:16.268949195 +0000
++++ kafs-client/src/aklog-kafs.c	2022-12-10 23:08:19.583522205 +0000
 @@ -1,4 +1,5 @@
  /* aklog.c: description
 + * vim: noet:ts=2:sw=2:tw=80:nowrap
@@ -29,7 +29,7 @@ index 16aa9a9..01e4763 100644
  
  // command line switches
  bool opt_debug   = false;
-@@ -353,6 +353,7 @@ int main(int argc, char **argv)
+@@ -354,6 +354,7 @@
  {
  	int opt;
  
@@ -37,54 +37,30 @@ index 16aa9a9..01e4763 100644
  	char *cell, *realm, *princ, *desc, *p;
  	int ret;
  	size_t plen;
-@@ -367,38 +368,33 @@ int main(int argc, char **argv)
- 		case 'd':
- 			opt_debug = true;
- 			opt_verbose = true;
--      --argc;
- 			break;
--		//default:
-+		default:
- 		case 'h':
- 			display_usage();
- 			break;
- 		case 'v':
- 			opt_verbose = true;
--      --argc;
- 			break;
- 		}
- 	}
- 
--	if (opt_debug) {
--		printf("argc: %d\n", argc);
--		printf("optind: %d\n", optind);
--	}
--	if (argc > 3) {
--		fprintf(stderr, "ERROR: too many arguments\n");
-+	if ((argc - optind) > 2) {
-+		fprintf(stderr, "ERROR: unexpected arguments after options\n");
+@@ -388,12 +389,17 @@
  		display_usage();
  	}
  
--	if (argc == 1) {
+-	if (argc - optind == 1)
 -		cell = get_default_cell();
--		if (opt_debug) {
+-	else
+-		cell = argv[optind];
 +	if ((argc - optind) <= 0) {
 +		cell = cell_scratch = get_default_cell();
 +		if (opt_verbose) {
- 			printf("Cell from /proc/net/afs/rootcell: %s\n", cell);
- 		}
- 	} else {
++ 			printf("Cell from /proc/net/afs/rootcell: %s\n", cell);
++ 		}
++ 	} else {
 +		cell_scratch = NULL;
- 		cell = argv[optind];
- 	}
++ 		cell = argv[optind];
++ 	}
  
--	if (argc == 2) {
+-	if (argc - optind == 2) {
 +	if ((argc - optind) > 1) {
  		realm = strdup(argv[optind + 1]);
  		OSZERROR(realm, "strdup");
  	} else {
-@@ -471,6 +467,13 @@ int main(int argc, char **argv)
+@@ -461,6 +467,13 @@
  	ret = add_key("rxrpc", desc, payload, plen, KEY_SPEC_SESSION_KEYRING);
  	OSERROR(ret, "add_key");
  
@@ -98,6 +74,3 @@ index 16aa9a9..01e4763 100644
  	krb5_free_creds(k5_ctx, creds);
  	krb5_free_cred_contents(k5_ctx, &search_cred);
  	krb5_cc_close(k5_ctx, cc);
--- 
-2.30.2
-

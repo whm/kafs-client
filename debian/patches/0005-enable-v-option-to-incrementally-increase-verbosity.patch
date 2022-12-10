@@ -8,20 +8,20 @@ Signed-off-by: Spencer E. Olson <olsonse@umich.edu>
  src/aklog-kafs.c | 15 +++++++++++----
  1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/src/aklog-kafs.c b/src/aklog-kafs.c
-index 289f190..a874f7b 100644
---- a/src/aklog-kafs.c
-+++ b/src/aklog-kafs.c
-@@ -35,7 +35,7 @@
- #include <linux/if_alg.h>
+Index: kafs-client/src/aklog-kafs.c
+===================================================================
+--- kafs-client.orig/src/aklog-kafs.c	2022-12-10 23:15:58.245565556 +0000
++++ kafs-client/src/aklog-kafs.c	2022-12-10 23:19:49.588700553 +0000
+@@ -36,7 +36,7 @@
  
  // command line switches
+ bool opt_help    = false;
 -bool opt_verbose = false;
 +int opt_verbose = 0;
  
  struct rxrpc_key_sec2_v1 {
          uint32_t        kver;                   /* key payload interface version */
-@@ -341,7 +341,14 @@ unset:
+@@ -342,7 +342,14 @@
   */
  void display_usage ()
  {
@@ -37,24 +37,27 @@ index 289f190..a874f7b 100644
  	exit(1);
  }
  
-@@ -365,7 +372,7 @@ int main(int argc, char **argv)
- 	while ((opt = getopt(argc, argv, "hv")) != -1) {
- 		switch (opt) {
+@@ -369,7 +376,7 @@
+ 			opt_help = true;
+ 			break;
  		case 'v':
 -			opt_verbose = true;
 +			++opt_verbose;
  			break;
  		default:
- 		case 'h':
-@@ -443,7 +450,7 @@ int main(int argc, char **argv)
+ 			display_usage();
+@@ -449,9 +456,11 @@
  		exit(1);
  	}
  
--	if (opt_verbose) {
+-	printf("plen=%zu tklen=%u rk=%zu\n",
+-	       plen, creds->ticket.length, sizeof(*payload));
+-
 +	if (opt_verbose >= 2) {
- 		printf("plen=%zu tklen=%u rk=%zu\n",
- 			plen, creds->ticket.length, sizeof(*payload));
- 	}
--- 
-2.30.2
-
++		printf("plen=%zu tklen=%u rk=%zu\n",
++			plen, creds->ticket.length, sizeof(*payload));
++	}
++    
+ 	/* use version 1 of the key data interface */
+ 	payload->kver           = 1;
+ 	payload->security_index = 2;

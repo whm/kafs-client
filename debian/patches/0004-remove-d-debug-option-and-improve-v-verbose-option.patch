@@ -8,19 +8,19 @@ Signed-off-by: Spencer E. Olson <olsonse@umich.edu>
  src/aklog-kafs.c | 17 +++++++----------
  1 file changed, 7 insertions(+), 10 deletions(-)
 
-diff --git a/src/aklog-kafs.c b/src/aklog-kafs.c
-index 01e4763..289f190 100644
---- a/src/aklog-kafs.c
-+++ b/src/aklog-kafs.c
+Index: kafs-client/src/aklog-kafs.c
+===================================================================
+--- kafs-client.orig/src/aklog-kafs.c	2022-12-10 23:10:31.077841066 +0000
++++ kafs-client/src/aklog-kafs.c	2022-12-10 23:14:44.758033240 +0000
 @@ -35,7 +35,6 @@
  #include <linux/if_alg.h>
  
  // command line switches
 -bool opt_debug   = false;
+ bool opt_help    = false;
  bool opt_verbose = false;
  
- struct rxrpc_key_sec2_v1 {
-@@ -342,7 +341,7 @@ unset:
+@@ -343,7 +342,7 @@
   */
  void display_usage ()
  {
@@ -29,7 +29,7 @@ index 01e4763..289f190 100644
  	exit(1);
  }
  
-@@ -363,19 +362,14 @@ int main(int argc, char **argv)
+@@ -364,12 +363,8 @@
  	krb5_ccache cc;
  	krb5_creds search_cred, *creds;
  
@@ -38,29 +38,22 @@ index 01e4763..289f190 100644
  		switch (opt) {
 -		case 'd':
 -			opt_debug = true;
-+		case 'v':
- 			opt_verbose = true;
- 			break;
- 		default:
- 		case 'h':
- 			display_usage();
--			break;
--		case 'v':
 -			opt_verbose = true;
 -			break;
- 		}
- 	}
- 
-@@ -403,7 +397,7 @@ int main(int argc, char **argv)
+ 		case 'h':
+ 			opt_help = true;
+ 			break;
+@@ -408,6 +403,9 @@
  		for (p = realm; *p; p++)
  			*p = toupper(*p);
  	}
--	if (opt_debug) {
 +	if (opt_verbose) {
- 		printf("Realm: %s\n", realm);
- 	}
++ 		printf("Realm: %s\n", realm);
++ 	}
  
-@@ -466,6 +460,9 @@ int main(int argc, char **argv)
+ 	for (p = cell; *p; p++)
+ 		*p = tolower(*p);
+@@ -466,6 +464,9 @@
  
  	ret = add_key("rxrpc", desc, payload, plen, KEY_SPEC_SESSION_KEYRING);
  	OSERROR(ret, "add_key");
@@ -70,6 +63,3 @@ index 01e4763..289f190 100644
  
  	if (cell_scratch) {
  		free(cell_scratch);
--- 
-2.30.2
-
