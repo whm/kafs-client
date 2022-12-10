@@ -8,11 +8,11 @@ Signed-off-by: Spencer E. Olson <olsonse@umich.edu>
  src/aklog-kafs.c | 11 ++++++-----
  1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/src/aklog-kafs.c b/src/aklog-kafs.c
-index fd176d9..3da6797 100644
---- a/src/aklog-kafs.c
-+++ b/src/aklog-kafs.c
-@@ -339,7 +339,7 @@ unset:
+Index: kafs-client/src/aklog-kafs.c
+===================================================================
+--- kafs-client.orig/src/aklog-kafs.c	2022-12-10 23:48:33.843784846 +0000
++++ kafs-client/src/aklog-kafs.c	2022-12-10 23:50:05.780215099 +0000
+@@ -340,7 +340,7 @@
  /*
   * Display a short usage message and exit
   */
@@ -21,7 +21,7 @@ index fd176d9..3da6797 100644
  {
  	fprintf(stderr,
  		"Usage: \n"
-@@ -355,7 +355,7 @@ void display_usage ()
+@@ -356,7 +356,7 @@
  		"       automatically switching to the uid-session keyring.\n"
  		" -V    Show version and exit\n"
  	);
@@ -30,31 +30,41 @@ index fd176d9..3da6797 100644
  }
  
  /*
-@@ -389,20 +389,21 @@ int main(int argc, char **argv)
+@@ -382,7 +382,7 @@
+ 	while ((opt = getopt(argc, argv, "hvVk:")) != -1) {
+ 		switch (opt) {
+ 		case 'h':
+-			opt_help = true;
++			display_usage(EXIT_SUCCESS);
+ 			break;
+ 		case 'k':
+ 			if (strcmp(optarg, "session") == 0)
+@@ -390,7 +390,7 @@
  			else if (strcmp(optarg, "uid-session") == 0)
  				dest_keyring = KEY_SPEC_USER_SESSION_KEYRING;
  			else
 -				display_usage();
 +				display_usage(EXIT_FAILURE);
  			break;
- 		case 'V':
+ 		case 'v':
+ 			++opt_verbose;
+@@ -399,16 +399,16 @@
  			printf("kAFS client: %s\n", VERSION);
  			exit(0);
  		default:
-+			display_usage(EXIT_FAILURE);
- 		case 'h':
 -			display_usage();
 +			display_usage(EXIT_SUCCESS);
  		}
  	}
  
- 	if ((argc - optind) > 2) {
- 		fprintf(stderr, "ERROR: unexpected arguments after options\n");
+ 	if (argc - optind > 2) {
+ 		fprintf(stderr, "ERROR: too many arguments\n");
 -		display_usage();
 +		display_usage(EXIT_FAILURE);
  	}
+ 	if (strcmp(argv[optind], "--help") == 0) {
+-		display_usage();
++		display_usage(EXIT_SUCCESS);
+ 	}
  
  	if ((argc - optind) <= 0) {
--- 
-2.30.2
-
