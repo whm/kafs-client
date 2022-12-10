@@ -1,0 +1,8 @@
+aklog-kafs
+kafs-check-config
+kafs-preload
+kafs-dns
+*.o
+*.os
+libkafs_client.so*
+TAGS
