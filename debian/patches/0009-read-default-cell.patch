@@ -1,0 +1,279 @@
+Index: kafs-client/src/aklog-kafs.c
+===================================================================
+--- kafs-client.orig/src/aklog-kafs.c	2022-12-11 19:38:59.673083036 +0000
++++ kafs-client/src/aklog-kafs.c	2022-12-11 20:09:21.227882585 +0000
+@@ -21,21 +21,20 @@
+  */
+ 
+ #define _GNU_SOURCE
++#include <byteswap.h>
++#include <ctype.h>
++#include <fcntl.h>
++#include <keyutils.h>
++#include <krb5/krb5.h>
++#include <linux/if_alg.h>
+ #include <stdbool.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+-#include <unistd.h>
+-#include <fcntl.h>
+-#include <ctype.h>
+-#include <keyutils.h>
+-#include <byteswap.h>
+ #include <sys/socket.h>
+-#include <krb5/krb5.h>
+-#include <linux/if_alg.h>
++#include <unistd.h>
+ 
+ // command line switches
+-bool opt_help    = false;
+ int opt_verbose = 0;
+ 
+ struct rxrpc_key_sec2_v1 {
+@@ -103,6 +102,56 @@
+ }
+ 
+ /*
++ * Utility routines for trimming whitespace from strings
++ */
++void rtrim(char *src)
++{
++    size_t i, len;
++    volatile int isblank = 1;
++
++    if(src == NULL) return;
++
++    len = strlen(src);
++    if(len == 0) return;
++    for(i = len - 1; i > 0; i--) {
++        isblank = isspace(src[i]);
++        if(isblank) {
++            src[i] = 0;
++        } else {
++            break;
++        }
++    }
++    if(isspace(src[i])) {
++        src[i] = 0;
++    }
++}
++
++void ltrim(char *src)
++{
++    size_t i, len;
++
++    if(src == NULL) return;
++
++    i = 0;
++    len = strlen(src);
++    if(len == 0) {
++      return;
++    }
++    while(src[i] && isspace(src[i])) {
++      i++;
++    }
++
++    memmove(src, src + i, len - i + 1);
++    return;
++}
++
++void trim(char *src)
++{
++    rtrim(src);
++    ltrim(src);
++}
++
++/*
+  * Strip Triple-DES parity bits from a block.
+  *
+  * Discard the parity bits and converts an 8-octet block to a 7-octet block.
+@@ -305,36 +354,144 @@
+ }
+ 
+ /*
++ * Read the default cell from the configuration file
++ */
++static char *conf_default_cell(void)
++{
++  char attr[256];
++  char buf[256];
++  char *cell = NULL;
++  bool default_found = false;
++  char filename[] = "/etc/kafs/client.conf";
++  char *token;
++  char val[256];
++
++  const char* sep = "=\n"; // get also rid of newlines
++
++  if (access(filename, F_OK) != 0) {
++    if (opt_verbose) {
++      fprintf(stdout, "INFO: file not found %s\n", filename);
++    }
++    return cell;
++  }
++
++  FILE *f = fopen(filename, "r");
++  while(fgets(buf, sizeof(buf), f) != NULL) {
++    trim(buf);
++    if(strlen(buf) == 0 || buf[0] == '#') {
++      continue;
++    }
++
++    if (!default_found) {
++      if (strcmp(buf, "[DEFAULT]") == 0) {
++        default_found = true;
++      }
++      continue;
++    }
++    if (buf[0] == '[') {
++      break;
++    }
++
++    token = strtok(buf, sep);
++    strncpy(attr, token, sizeof attr);
++    attr[sizeof(attr) - 1] = 0;
++    trim(attr);
++    if (strcmp(attr, "cell") != 0) {
++      continue;
++    }
++
++    token = strtok(NULL, sep);
++    if (token == NULL) {
++      continue;
++    }
++    strncpy(val, token, sizeof val);
++    val[sizeof(val) - 1] = 0;
++    trim(val);
++    cell = strdup(val);
++    break;
++  }
++
++  return cell;
++}
++
++/*
++ * Read the default cell from proc
++ */
++static char *proc_default_cell(void)
++{
++    static const char rootcell[] = "/proc/net/afs/rootcell";
++    ssize_t n;
++    char buf[260];
++    char *nl;
++    char *cell = NULL;
++    int fd;
++
++    if (access(rootcell, F_OK) != 0) {
++      if (opt_verbose) {
++        fprintf(stdout, "INFO: file not found %s\n", rootcell);
++      }
++      return cell;
++    }
++
++    fd = open(rootcell, O_RDONLY);
++    if (fd == -1) {
++      fprintf(stderr, "ERROR: problem reading %s\n", rootcell);
++      return cell;
++    }
++
++    n = read(fd, buf, sizeof(buf) - 2);
++    if (n == -1) {
++      fprintf(stderr, "ERROR: problem reading %s\n", rootcell);
++      return cell;
++    }
++    close(n);
++    if (n == 0) {
++      return cell;
++    }
++
++    buf[n] = 0;
++    nl = memchr(buf, '\n', n);
++    if (nl == buf) {
++      return cell;
++    }
++    *nl = 0;
++
++    cell = strdup(buf);
++    if (cell == 0) {
++      fprintf(stderr, "ERROR: zero length default cell in %s\n", rootcell);
++      return cell;
++    }
++
++    return cell;
++}
++
++/*
+  * Read the name of default cell.
+  */
+ static char *get_default_cell(void)
+ {
+-	static const char rootcell[] = "/proc/net/afs/rootcell";
+-	ssize_t n;
+-	char buf[260], *nl, *cell;
+-	int fd;
+-
+-	fd = open(rootcell, O_RDONLY);
+-	OSERROR(fd, rootcell);
+-	n = read(fd, buf, sizeof(buf) - 2);
+-	OSERROR(n, rootcell);
+-	close(n);
+-	if (n == 0)
+-		goto unset;
+-
+-	buf[n] = 0;
+-	nl = memchr(buf, '\n', n);
+-	if (nl == buf)
+-		goto unset;
+-	*nl = 0;
+-
+-	cell = strdup(buf);
+-	OSZERROR(cell, "strdup");
+-	return cell;
++  char *cell = NULL;
+ 
+-unset:
+-	fprintf(stderr, "error: The default cell is not set\n");
+-	exit(1);
++  cell = conf_default_cell();
++  if (cell != NULL) {
++    if (opt_verbose) {
++      fprintf(stdout, "Default cell from conf file: %s\n", cell);
++    }
++  } else {
++    if (opt_verbose) {
++      fprintf(stdout, "No default cell from conf file\n");
++    }
++    cell = proc_default_cell();
++    if (opt_verbose) {
++      if (cell == NULL) {
++        fprintf(stdout, "No default from proc cell\n");
++      } else {
++        fprintf(stdout, "Default cell from proc: %s\n", cell);
++      }
++    }
++  }
++
++  return cell;
+ }
+ 
+ /*
+@@ -407,9 +564,6 @@
+ 		fprintf(stderr, "ERROR: too many arguments\n");
+ 		display_usage(EXIT_FAILURE);
+ 	}
+-	if (strcmp(argv[optind], "--help") == 0) {
+-		display_usage(EXIT_SUCCESS);
+-	}
+ 
+ 	if ((argc - optind) <= 0) {
+ 		cell = cell_scratch = get_default_cell();
+@@ -480,7 +634,7 @@
+ 		printf("plen=%zu tklen=%u rk=%zu\n",
+ 			plen, creds->ticket.length, sizeof(*payload));
+ 	}
+-    
++
+ 	/* use version 1 of the key data interface */
+ 	payload->kver           = 1;
+ 	payload->security_index = 2;

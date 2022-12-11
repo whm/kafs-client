@@ -6,3 +6,4 @@
 0006-Use-Chaskiel-Grundman-s-suggestion-for-switching-key.patch
 0007-add-commandline-option-to-show-build-version.patch
 0008-make-display_usage-use-proper-exit-status.patch
+0009-read-default-cell.patch
