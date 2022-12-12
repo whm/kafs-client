@@ -7,3 +7,4 @@
 0007-add-commandline-option-to-show-build-version.patch
 0008-make-display_usage-use-proper-exit-status.patch
 0009-remove-help-switch.patch
+0010-change-verbose-to-debug.patch
