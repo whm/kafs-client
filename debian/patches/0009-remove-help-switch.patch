@@ -1,0 +1,14 @@
+Index: kafs-client/src/aklog-kafs.c
+===================================================================
+--- kafs-client.orig/src/aklog-kafs.c	2022-12-12 01:51:47.301943745 +0000
++++ kafs-client/src/aklog-kafs.c	2022-12-12 01:52:47.696799511 +0000
+@@ -407,9 +407,6 @@
+ 		fprintf(stderr, "ERROR: too many arguments\n");
+ 		display_usage(EXIT_FAILURE);
+ 	}
+-	if (strcmp(argv[optind], "--help") == 0) {
+-		display_usage(EXIT_SUCCESS);
+-	}
+ 
+ 	if ((argc - optind) <= 0) {
+ 		cell = cell_scratch = get_default_cell();
