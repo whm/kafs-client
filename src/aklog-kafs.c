@@ -407,9 +407,6 @@ int main(int argc, char **argv)
 		fprintf(stderr, "ERROR: too many arguments\n");
 		display_usage(EXIT_FAILURE);
 	}
-	if (strcmp(argv[optind], "--help") == 0) {
-		display_usage(EXIT_SUCCESS);
-	}
 
 	if ((argc - optind) <= 0) {
 		cell = cell_scratch = get_default_cell();
