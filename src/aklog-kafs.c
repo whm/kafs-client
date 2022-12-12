@@ -35,17 +35,19 @@
 #include <linux/if_alg.h>
 
 // command line switches
-bool opt_help    = false;
-int opt_verbose = 0;
+int opt_debug = 0;
+
+// default cell file path
+static const char rootcell[] = "/proc/net/afs/rootcell";
 
 struct rxrpc_key_sec2_v1 {
-        uint32_t        kver;                   /* key payload interface version */
-        uint16_t        security_index;         /* RxRPC header security index */
-        uint16_t        ticket_length;          /* length of ticket[] */
-        uint32_t        expiry;                 /* time at which expires */
-        uint32_t        kvno;                   /* key version number */
-        uint8_t         session_key[8];         /* DES session key */
-        uint8_t         ticket[0];              /* the encrypted ticket */
+	uint32_t        kver;                   /* key payload interface version */
+	uint16_t        security_index;         /* RxRPC header security index */
+	uint16_t        ticket_length;          /* length of ticket[] */
+	uint32_t        expiry;                 /* time at which expires */
+	uint32_t        kvno;                   /* key version number */
+	uint8_t         session_key[8];         /* DES session key */
+	uint8_t         ticket[0];              /* the encrypted ticket */
 };
 
 #define MD5_DIGEST_SIZE		16
@@ -305,36 +307,66 @@ key_too_short:
 }
 
 /*
+ * Print a message and bail out if the default cell is not available
+ */
+void error_get_default_cell(void)
+{
+	fprintf(stderr, "ERROR: The default cell is NOT set\n");
+	fprintf(stderr, "\n");
+	fprintf(stderr,
+		"INFO: Ensure that thiscell is set in the [defaults]\n");
+	fprintf(stderr,
+		"      section of the /etc/kafs/client.conf file.\n");
+	exit(1);
+}
+
+/*
  * Read the name of default cell.
  */
 static char *get_default_cell(void)
 {
-	static const char rootcell[] = "/proc/net/afs/rootcell";
 	ssize_t n;
-	char buf[260], *nl, *cell;
+	char buf[260];
+	char *cell;
+	char *nl;
 	int fd;
 
+	if (access(rootcell, F_OK) != 0) {
+		if (opt_debug) {
+			fprintf(stdout, "INFO: file not found %s\n", rootcell);
+		}
+		error_get_default_cell();
+	}
+
 	fd = open(rootcell, O_RDONLY);
-	OSERROR(fd, rootcell);
+	if (fd == -1) {
+		fprintf(stderr, "ERROR: problem opening %s\n", rootcell);
+		error_get_default_cell();
+	}
 	n = read(fd, buf, sizeof(buf) - 2);
-	OSERROR(n, rootcell);
+	if (n == -1) {
+		fprintf(stderr, "ERROR: problem reading %s\n", rootcell);
+		error_get_default_cell();
+	}
 	close(n);
-	if (n == 0)
-		goto unset;
+	if (n == 0) {
+		error_get_default_cell();
+	}
 
 	buf[n] = 0;
 	nl = memchr(buf, '\n', n);
-	if (nl == buf)
-		goto unset;
+	if (nl == buf) {
+		error_get_default_cell();
+	}
 	*nl = 0;
 
 	cell = strdup(buf);
-	OSZERROR(cell, "strdup");
+	if (cell == 0) {
+		fprintf(stderr,
+			"ERROR: zero length default cell in %s\n", rootcell);
+		error_get_default_cell();
+	}
 	return cell;
-
-unset:
-	fprintf(stderr, "error: The default cell is not set\n");
-	exit(1);
 }
 
 /*
@@ -348,7 +380,7 @@ void display_usage (int exit_status)
 		"\n"
 		"Options:\n"
 		" -h    display this help and exit\n"
-		" -v    increase verbosity with each instance of this argument\n"
+		" -d    increase verbosity with each instance of this argument\n"
 		" -k    manually specify keyring to add AFS key into:\n"
 		"         session\n"
 		"         uid-session\n"
@@ -379,7 +411,7 @@ int main(int argc, char **argv)
 
 	dest_keyring = 0;
 
-	while ((opt = getopt(argc, argv, "hvVk:")) != -1) {
+	while ((opt = getopt(argc, argv, "hdVk:")) != -1) {
 		switch (opt) {
 		case 'h':
 			display_usage(EXIT_SUCCESS);
@@ -392,8 +424,8 @@ int main(int argc, char **argv)
 			else
 				display_usage(EXIT_FAILURE);
 			break;
-		case 'v':
-			++opt_verbose;
+		case 'd':
+			++opt_debug;
 			break;
 		case 'V':
 			printf("kAFS client: %s\n", VERSION);
@@ -410,13 +442,13 @@ int main(int argc, char **argv)
 
 	if ((argc - optind) <= 0) {
 		cell = cell_scratch = get_default_cell();
-		if (opt_verbose) {
- 			printf("Cell from /proc/net/afs/rootcell: %s\n", cell);
- 		}
- 	} else {
+		if (opt_debug) {
+			printf("Default cell from %s: %s\n", rootcell, cell);
+		}
+	} else {
 		cell_scratch = NULL;
- 		cell = argv[optind];
- 	}
+		cell = argv[optind];
+	}
 
 	if ((argc - optind) > 1) {
 		realm = strdup(argv[optind + 1]);
@@ -424,12 +456,13 @@ int main(int argc, char **argv)
 	} else {
 		realm = strdup(cell);
 		OSZERROR(realm, "strdup");
-		for (p = realm; *p; p++)
+		for (p = realm; *p; p++) {
 			*p = toupper(*p);
+		}
 	}
-	if (opt_verbose) {
- 		printf("Realm: %s\n", realm);
- 	}
+	if (opt_debug) {
+		printf("Realm: %s\n", realm);
+	}
 
 	for (p = cell; *p; p++)
 		*p = tolower(*p);
@@ -439,7 +472,7 @@ int main(int argc, char **argv)
 	ret = asprintf(&desc, "afs@%s", cell);
 	OSERROR(ret, "asprintf");
 
-	if (opt_verbose) {
+	if (opt_debug) {
 		printf("CELL %s\n", cell);
 		printf("PRINC %s\n", princ);
 	}
@@ -473,11 +506,11 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	if (opt_verbose >= 2) {
+	if (opt_debug >= 2) {
 		printf("plen=%zu tklen=%u rk=%zu\n",
 			plen, creds->ticket.length, sizeof(*payload));
 	}
-    
+
 	/* use version 1 of the key data interface */
 	payload->kver           = 1;
 	payload->security_index = 2;
@@ -488,15 +521,16 @@ int main(int argc, char **argv)
 	derive_key(creds, payload->session_key);
 	memcpy(payload->ticket, creds->ticket.data, creds->ticket.length);
 
-	/* if the session keyring is not set (i.e. using the uid session keyring),
-	 * then the kernel will instantiate a new session keyring if any keys are
-	 * added to KEY_SPEC_SESSION_KEYRING! Since we exit immediately, that keyring
-	 * will be orphaned. So, add the key to KEY_SPEC_USER_SESSION_KEYRING in that
-	 * case.
+	/* if the session keyring is not set (i.e. using the uid
+	 * session keyring), then the kernel will instantiate a new
+	 * session keyring if any keys are added to
+	 * KEY_SPEC_SESSION_KEYRING! Since we exit immediately, that
+	 * keyring will be orphaned. So, add the key to
+	 * KEY_SPEC_USER_SESSION_KEYRING in that case.
 	 */
 	sessring  = keyctl_get_keyring_ID(KEY_SPEC_SESSION_KEYRING, 0);
 	usessring = keyctl_get_keyring_ID(KEY_SPEC_USER_SESSION_KEYRING, 0);
-	if (opt_verbose >= 2) {
+	if (opt_debug >= 2) {
 		printf("session keyring found: %d\n", sessring);
 		printf("uid-session keyring found: %d\n", usessring);
 	}
@@ -520,7 +554,7 @@ int main(int argc, char **argv)
 	    dest_keyring != KEY_SPEC_USER_SESSION_KEYRING) {
 		fprintf(stderr, "using unknown keyring (%d)\n", dest_keyring);
 		exit(EXIT_FAILURE);
-	} else if (opt_verbose >= 2) {
+	} else if (opt_debug >= 2) {
 		if (dest_keyring == KEY_SPEC_SESSION_KEYRING)
 			printf("using session keyring (%d)\n", dest_keyring);
 		else if (dest_keyring == KEY_SPEC_USER_SESSION_KEYRING)
@@ -529,7 +563,7 @@ int main(int argc, char **argv)
 
 	ret = add_key("rxrpc", desc, payload, plen, dest_keyring);
 	OSERROR(ret, "add_key");
-	if (opt_verbose) {
+	if (opt_debug) {
 		if (dest_keyring == KEY_SPEC_SESSION_KEYRING)
 			printf("successfully added key: %d to session keyring\n", ret);
 		else if (dest_keyring == KEY_SPEC_USER_SESSION_KEYRING)
