@@ -1,5 +1,6 @@
 kafs-client (0.5-3) unstable; urgency=medium
 
+  [ Bill MacAllister]
   * Patches from Spencer Olson <olsonse.umich.edu> for aklog-kafs.
     - Fix minimal command line argument parsing
     - remove -d debug option and improve -v verbose option
@@ -21,6 +22,9 @@ kafs-client (0.5-3) unstable; urgency=medium
     - Change the verbose routine to always write to syslog.
     - Add display of failure to set rootcell and sysname when debug
       is set.
+
+  [ Russ Allbery ]
+  * Fix syntax of Lintian overrides for the current version of Lintian.
     
  -- Bill MacAllister <bill@ca-zephyr.org>  Sun, 11 Dec 2022 01:25:19 +0000
 
