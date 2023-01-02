@@ -30,12 +30,14 @@
 #include <kafs/profile.h>
 #include <kafs/cellserv.h>
 
+int opt_debug = 0;
+
 static void verbose(const char *fmt, ...)
 {
 	va_list va;
 
 	va_start(va, fmt);
-	if (isatty(2)) {
+	if (opt_debug) {
 		vprintf(fmt, va);
 		putchar('\n');
 	} else {
@@ -55,9 +57,9 @@ static void _error(const char *fmt, ...)
 	if (isatty(2)) {
 		vfprintf(stderr, fmt, va);
 		fputc('\n', stderr);
-	} else {
-		vsyslog(LOG_ERR, fmt, va);
 	}
+    vsyslog(LOG_ERR, fmt, va);
+
 	va_end(va);
 }
 
@@ -126,9 +128,12 @@ int do_preload(const struct kafs_cell_db *db, bool redirect_to_stdout)
 				_error("Can't add cell '%s': %m", cell->name);
 				exit(1);
 			}
-
-			verbose("%s: Already exists", cell->name);
-		}
+            if (opt_debug > 1) {
+              verbose("%s: Already exists", cell->name);
+            }
+		} else {
+			verbose("%s: Cell Added", cell->name);
+        }
 	}
 
 	if (!redirect_to_stdout) {
@@ -138,8 +143,26 @@ int do_preload(const struct kafs_cell_db *db, bool redirect_to_stdout)
 		}
 	}
 
-	write_to_proc("/proc/net/afs/rootcell", kafs_this_cell, redirect_to_stdout);
+	write_to_proc("/proc/net/afs/rootcell",
+                  kafs_this_cell,
+                  redirect_to_stdout);
+    if (opt_debug) {
+      if (kafs_this_cell == NULL) {
+        verbose("%s", "INFO: rootcell NOT set, check value of thiscell");
+      } else {
+        verbose("INFO: rootcell set to %s", kafs_this_cell);
+      }
+    }
+
 	write_to_proc("/proc/net/afs/sysname", kafs_sysname, redirect_to_stdout);
+    if (opt_debug) {
+      if (kafs_sysname == NULL) {
+        verbose("%s", "INFO: sysname NOT set");
+      } else {
+        verbose("INFO: sysname set to %s", kafs_sysname);
+      }
+    }
+
 	exit(0);
 }
 
@@ -160,17 +183,17 @@ int main(int argc, char *argv[])
 	if (argc > 1 && strcmp(argv[1], "--help") == 0)
 		usage(argv[0]);
 
-	while (opt = getopt(argc, argv, "Dv"),
+	while (opt = getopt(argc, argv, "dDv"),
 	       opt != -1) {
 		switch (opt) {
 		case 'D':
 			redirect_to_stdout = true;
 			break;
+		case 'd':
+			++opt_debug;
+			break;
 		case 'v':
-			if (!report.verbose)
-				report.verbose = verbose;
-			else
-				report.verbose2 = verbose;
+			++opt_debug;
 			break;
 		default:
 			usage(argv[0]);
@@ -181,6 +204,9 @@ int main(int argc, char *argv[])
 	if (!redirect_to_stdout) {
 		openlog("kafs-preload", 0, LOG_USER);
 		syslog(LOG_NOTICE, "kAFS: Preloading cell database");
+        if (opt_debug) {
+          verbose("kAFS: Preloading cell database");
+        }
 	}
 
 	argc -= optind;
