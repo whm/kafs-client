@@ -1,3 +1,9 @@
+From: Bill MacAllister <bill@ca-zephyr.org>
+Date: Sun Dec 11 23:02:24 2022
+Subject: Remove --help switch
+
+The --help switch is redundant and not necessary.
+
 Index: kafs-client/src/aklog-kafs.c
 ===================================================================
 --- kafs-client.orig/src/aklog-kafs.c	2022-12-12 01:51:47.301943745 +0000

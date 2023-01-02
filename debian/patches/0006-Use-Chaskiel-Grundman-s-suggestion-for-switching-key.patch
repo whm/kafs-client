@@ -7,7 +7,7 @@ If the session keyring is not found, this patch now automatically causes
 the UID session keyring to be used.
 
 This patch also allows the user to explicitly specify the keyring to use
-with an error occuring if the specified keyring does not exist.
+with an error occurring if the specified keyring does not exist.
 
 This patch also allows increased verbosity pertaining to the keyring
 selection.

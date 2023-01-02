@@ -1,3 +1,15 @@
+From: Bill MacAllister <bill@ca-zephyr.org>
+Date: Sun Jan 1 18:42:06 2023
+Subject: Updates to preload
+
+* Add .c as a synomyn to -v.
+* Use the same policy for -d as implemented in kafs-aklog, namely
+  -d can be specified more than once increasing the level of debug
+  messages.
+* Change the verbose routine to always write to syslog.
+* Add display of failure to set rootcell and sysname when debug
+  is set.
+
 Index: kafs-client/src/preload-cells.c
 ===================================================================
 --- kafs-client.orig/src/preload-cells.c	2023-01-02 02:40:01.297978577 +0000

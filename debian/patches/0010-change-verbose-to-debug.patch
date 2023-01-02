@@ -1,3 +1,12 @@
+From: Bill MacAllister <bill@ca-zephyr.org>
+Date: Mon Dec 12 00:01:17 2022
+Subject: Change verbose option to debug
+
+Rename -v, verbose option, to -d debug option.
+
+Add file test to the default cell setting errors and add a message describing
+the remedy.
+
 Index: kafs-client/src/aklog-kafs.c
 ===================================================================
 --- kafs-client.orig/src/aklog-kafs.c	2022-12-12 08:00:33.658807946 +0000
