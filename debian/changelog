@@ -1,6 +1,6 @@
 kafs-client (0.5-3) unstable; urgency=medium
 
-  * Patches from Spencer Olson <olsonse.umich.edu>.
+  * Patches from Spencer Olson <olsonse.umich.edu> for aklog-kafs.
     - Fix minimal command line argument parsing
     - remove -d debug option and improve -v verbose option
     - enable -v option to incrementally increase verbosity
@@ -10,9 +10,17 @@ kafs-client (0.5-3) unstable; urgency=medium
   * Patches from Debian Janitor <janitor@jelmer.uk>  
     - Use canonical URL in Vcs-Git.
     - Update standards version to 4.6.0, no changes needed.
-  * Rename -v, verbose option, to -d debug option.
-  * Add file test to the default cell setting errors and add a
-    message describing the remedy.
+  * Rename -v, verbose option, to -d debug option in aklog-kafs.
+  * Add test for failure to set the default cell and add a message
+    describing the remedy.
+  * Updates to preload
+    - Add .c as a synomyn to -v.
+    - Use the same policy for -d as implemented in kafs-aklog, namely
+      -d can be specified more than once increasing the level of debug
+      messages.
+    - Change the verbose routine to always write to syslog.
+    - Add display of failure to set rootcell and sysname when debug
+      is set.
     
  -- Bill MacAllister <bill@ca-zephyr.org>  Sun, 11 Dec 2022 01:25:19 +0000
 
