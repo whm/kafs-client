@@ -25,6 +25,7 @@ kafs-client (0.5-3) unstable; urgency=medium
 
   [ Russ Allbery ]
   * Fix syntax of Lintian overrides for the current version of Lintian.
+  * Update standards version to 4.6.2 (no changes required).
 
  -- Bill MacAllister <bill@ca-zephyr.org>  Sun, 11 Dec 2022 01:25:19 +0000
 
