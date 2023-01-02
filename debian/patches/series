@@ -9,3 +9,4 @@
 0009-remove-help-switch.patch
 0010-change-verbose-to-debug.patch
 0011-preload-verbose.patch
+auto-gitignore
