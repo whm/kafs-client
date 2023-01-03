@@ -1,3 +1,9 @@
+kafs-client (0.5-4) unstable; urgency=medium
+
+  * Move man page for aklog-kafs to POD for ease of maintenance.
+
+ -- Bill MacAllister <bill@ca-zephyr.org>  Tue, 03 Jan 2023 01:25:10 +0000
+
 kafs-client (0.5-3) unstable; urgency=medium
 
   [ Bill MacAllister]

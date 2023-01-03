@@ -1,6 +1,9 @@
 #!/usr/bin/make -f
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+bindnow
+VERSION := $(shell dpkg-parsechangelog | grep ^Version: | cut -d' ' -f2 \
+                | cut -d- -f1)
+PACKAGE := kafs-client
 
 DH_VERBOSE = 1
 
@@ -8,5 +11,9 @@ DH_VERBOSE = 1
 	dh $@
 
 override_dh_auto_install:
+	mkdir -p debian/$(PACKAGE)/usr/share/man/man1
+	pod2man --release=$(VERSION) --section 1 --center=$(PACKAGE) \
+		man/aklog-kafs.pod \
+		> debian/$(PACKAGE)/usr/share/man/man1/aklog-kafs.1
 	dh_auto_install
 	dh_installsystemd --name=afs

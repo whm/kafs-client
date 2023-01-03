@@ -1,0 +1,139 @@
+Description: Maintain aklog-kafs as POD
+ Move to using POD to maintain the man page for aklog-kafs.  The man
+ page will be generated as part of the package build process.
+Author: Bill MacAllister <bill@ca-zephyr.org>
+Last-Update: 2023-01-03
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+Index: kafs-client/man/aklog-kafs.pod
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ kafs-client/man/aklog-kafs.pod	2023-01-03 01:38:53.754330261 +0000
+@@ -0,0 +1,84 @@
++=head1 NAME
++
++aklog-kafs - AFS Kerberos authentication tool
++
++=head1 SYNOPSIS
++
++aklog-kafs [OPTIONS] [<cell> [<realm>]]
++
++=head1 DESCRIPTION
++
++This program is used to get an authentication ticket from Kerberos
++that can be used by the in-kernel AFS filesystem (kAFS) to perform
++authenticated and encrypted accesses to the an AFS cell.  Without this
++only unencrypted anonymous accesses can be made.
++
++Before calling this, the C<kinit> program or similar should be invoked
++to authenticate with the appropriate Kerberos server.
++
++=head1 ARGUMENTS
++
++=over
++
++=item <cell>
++
++This is the name of the cell with which the ticket is intended to be
++used.  If not given, the name of the default cell will be read from
++C</proc/net/afs/rootcell> and used instead.
++
++The root cell can be set in the C</etc/kafs/client> configuration
++file by setting the C<thiscell> in the C<[defaults]> section.  If
++the value of thiscell is changed in the configuration file than
++C<kafs-preload> needs to be run to refresh the value in the
++C</proc/net/afs/rootcell> file.
++
++=item <realm>
++
++This is the name of the Kerberos realm from which the ticket will be
++obtained.
++
++=back
++
++=head1 OPTIONS
++
++=over
++
++=item C<-h>
++
++Display help text and exit.
++
++=item C<-d>
++
++Display processing messages.  Specifying C<-d> more than once increases
++the verbosity of the messages.
++
++=item C<-k>
++
++Manually specify keyring to add AFS key into.  Otherwise, a session
++keyring will be used first if found before automatically switching to
++the uid-session keyring.
++
++Valid values are:
++
++         session
++         uid-session
++
++=item C<-V>
++
++Show version and exit.
++
++=back
++
++=head1 SEE ALSO
++
++kinit, kafs-preload, kafs-client.conf, keyctl
++
++=head1 COPYRIGHT
++
++Copyright (C) 2018 Red Hat, Inc. All Rights Reserved.
++Written by David Howells (dhowells@redhat.com)
++
++This program is free software; you can redistribute it and/or modify
++it under the terms of the GNU General Public License as published by
++the Free Software Foundation; either version 2 of the License, or (at
++your option) any later version.
+Index: kafs-client/man/aklog-kafs.1
+===================================================================
+--- kafs-client.orig/man/aklog-kafs.1	2023-01-03 01:38:18.592662688 +0000
++++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+@@ -1,38 +0,0 @@
+-.\"
+-.\" Copyright (C) 2018 Red Hat, Inc. All Rights Reserved.
+-.\" Written by David Howells (dhowells@redhat.com)
+-.\"
+-.\" This program is free software; you can redistribute it and/or
+-.\" modify it under the terms of the GNU General Public License
+-.\" as published by the Free Software Foundation; either version
+-.\" 2 of the License, or (at your option) any later version.
+-.\"
+-.TH AKLOG-KAFS 1 "16 Apr 2019" Linux "AFS Kerberos authentication"
+-.SH NAME
+-aklog-kafs \- AFS Kerberos authentication tool
+-.SH SYNOPSIS
+-\fBaklog-kafs\fR [<cell> [<realm>]]
+-.P
+-.B
+-*** NOTE THE ABOVE IS PROVISIONAL AND IS LIKELY TO CHANGE ***
+-.R
+-.SH DESCRIPTION
+-This program is used to get an authentication ticket from Kerberos that can be
+-used by the in-kernel AFS filesystem (kAFS) to perform authenticated and
+-encrypted accesses to the server.  Without this only unencrypted anonymous
+-accesses can be made.
+-.P
+-Before calling this, the \fBkinit\fR program or similar should be invoked to
+-authenticate with the appropriate Kerberos server.
+-.SH ARGUMENTS
+-.IP <cell>
+-This is the name of the cell with which the ticket is intended to be used.  If
+-not given, the name of the default cell will be read from
+-\fB/proc/net/afs/rootcell\fR and used instead.
+-.IP <realm>
+-This is the name of the Kerberos realm from which the ticket will be obtained.
+-.SH ERRORS
+-.SH SEE ALSO
+-.ad l
+-.nh
+-.BR kinit (1)
