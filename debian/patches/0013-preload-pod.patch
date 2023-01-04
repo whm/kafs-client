@@ -1,0 +1,131 @@
+Description: Convert kafs-preload man page to POD
+ Convert the man page for kafs-preload to POD for ease of maintenance
+ and generate the man page on the fly when the package is built.
+Author: Bill MacAllister <bill@ca-zephyr.org>
+Last-Update: 2023-01-04
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+Index: kafs-client/man/kafs-preload.8
+===================================================================
+--- kafs-client.orig/man/kafs-preload.8	2023-01-04 08:35:38.633010001 +0000
++++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+@@ -1,44 +0,0 @@
+-.\"
+-.\" Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
+-.\" Written by David Howells (dhowells@redhat.com)
+-.\"
+-.\" This program is free software; you can redistribute it and/or
+-.\" modify it under the terms of the GNU General Public License
+-.\" as published by the Free Software Foundation; either version
+-.\" 2 of the License, or (at your option) any later version.
+-.\"
+-.TH KAFS-PRELOAD 8 "9 Jun 2020" Linux "AFS configuration preloader"
+-.SH NAME
+-kafs-preload \- AFS filesystem configuration preloader
+-.SH SYNOPSIS
+-\fB/usr/libexec/kafs-preload [-Dv]\fR
+-.SH DESCRIPTION
+-This program loads static configuration into the AFS filesystem, such as
+-preloading some cells and setting the workstation cell (@cell) and the system
+-identifier list (@sys).
+-.PP
+-This is not intended to be called directly, but rather is intended to be called
+-from a systemd service unit file.
+-.PP
+-The available options are:
+-.IP -D
+-Execute in debug mode.  Instead of writing to various
+-.BR proc (5)
+-files, it notes what it would do to stdout.
+-.IP -v
+-Increase the verbosity of the output.  This may be specified multiple times.
+-.SH EXIT STATUS
+-.IP 0
+-On success.
+-.IP 1
+-If an error occurs during processing.
+-.IP 2
+-If a command line error occurs.
+-.IP 3
+-If bad configuration is detected.
+-.SH SEE ALSO
+-.ad l
+-.nh
+-.BR kafs (7),
+-.BR kafs\-client.conf (5),
+-.BR proc (5)
+Index: kafs-client/man/kafs-preload.pod
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ kafs-client/man/kafs-preload.pod	2023-01-04 08:39:18.731419678 +0000
+@@ -0,0 +1,70 @@
++=head1 NAME
++
++kafs-preload - AFS filesystem configuration preloader
++
++=head1 SYNOPSIS
++
++kafs-preload [-Dv] [<configuration file>]
++
++=head1 DESCRIPTION
++
++This program loads static configuration into the AFS filesystem, such
++as preloading cells, setting the workstation cell (@cell), and the
++system identifier list (@sys).
++
++This program is not usally invoked directly, but rather is usually
++called from a systemd service unit file.  If the properties sysname
++or thiscell are changed in the kafs client configuration file running
++kafs-preload will update the /proc files.
++
++=head1 OPTIONS
++
++=over
++
++=item -D
++
++Execute in debug mode.  Instead of writing to various /proc files,
++write to stdout.
++
++=item -v
++
++Increase the verbosity of the output.  This may be specified multiple
++times.
++
++=back
++
++=head1 EXIT STATUS
++
++=over 
++
++=item 0 - On success
++
++=item 1 - If an error occurs during processing
++
++=item 2 - If a command line error occurs
++
++=item 3 - If bad configuration is detected
++
++=back
++
++=head1 EXAMPLE
++
++      # kafs-preload -v /etc/kafs/client.conf
++      kAFS: Preloading cell database
++      INFO: rootcell set to ca-zephyr.org
++      INFO: sysname set to x86_64
++
++
++=head1 SEE ALSO
++
++kafs-client.conf (5), aklog-kafs (1), kafs (7), proc (5)
++
++=head1 COPYRIGHT
++
++Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
++Written by David Howells (dhowells@redhat.com)
++
++This program is free software; you can redistribute it and/or modify
++it under the terms of the GNU General Public License as published by
++the Free Software Foundation; either version 2 of the License, or (at
++your option) any later version.
