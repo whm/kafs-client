@@ -1,9 +1,3 @@
-kafs-client (0.5-4) unstable; urgency=medium
-
-  * Move man page for aklog-kafs to POD for ease of maintenance.
-
- -- Bill MacAllister <bill@ca-zephyr.org>  Tue, 03 Jan 2023 01:25:10 +0000
-
 kafs-client (0.5-3) unstable; urgency=medium
 
   [ Bill MacAllister]
@@ -28,6 +22,11 @@ kafs-client (0.5-3) unstable; urgency=medium
     - Change the verbose routine to always write to syslog.
     - Add display of failure to set rootcell and sysname when debug
       is set.
+  * Convert raw man pages to POD for ease of maintenance.
+    - aklog-kafs
+    - kafs-preload
+  * When no cell is specified on the kafs-check-config use the
+    root cell.
 
   [ Russ Allbery ]
   * Fix syntax of Lintian overrides for the current version of Lintian.
