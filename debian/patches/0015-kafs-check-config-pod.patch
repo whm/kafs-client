@@ -1,6 +1,6 @@
 Index: kafs-client/man/kafs-check-config.8
 ===================================================================
---- kafs-client.orig/man/kafs-check-config.8	2023-01-07 07:25:26.000000000 +0000
+--- kafs-client.orig/man/kafs-check-config.8	2023-01-08 02:13:42.734112499 +0000
 +++ /dev/null	1970-01-01 00:00:00.000000000 +0000
 @@ -1,78 +0,0 @@
 -.\"
@@ -84,8 +84,8 @@ Index: kafs-client/man/kafs-check-config.8
 Index: kafs-client/man/kafs-check-config.pod
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ kafs-client/man/kafs-check-config.pod	2023-01-08 00:41:03.870430355 +0000
-@@ -0,0 +1,142 @@
++++ kafs-client/man/kafs-check-config.pod	2023-01-08 02:15:55.792322504 +0000
+@@ -0,0 +1,170 @@
 +=head1 NAME
 +
 +kafs-check-config - AFS configuration check tool
@@ -213,7 +213,35 @@ Index: kafs-client/man/kafs-check-config.pod
 +
 +To display two specific cells:
 +
-+        # kafs-check-config ir.stanford.edu slac.stanford.edu
++        # kafs-check-config ir.stanford.edu grand.central.org
++
++        === Found cell ir.stanford.edu ===
++          - show-cell=no
++          - status: good, from SRV
++          - VLSERVER afsdb3.stanford.edu [good; nss]
++            - udp
++            - port 7003, pref 0, weight 0
++            - address 171.64.7.246
++          - VLSERVER afsdb2.stanford.edu [good; nss]
++            - udp
++            - port 7003, pref 0, weight 0
++            - address 171.64.7.234
++          - VLSERVER afsdb1.stanford.edu [good; nss]
++            - udp
++            - port 7003, pref 0, weight 0
++            - address 171.64.7.222
++
++        === Found cell grand.central.org ===
++          - show-cell=no
++          - status: good, from SRV
++          - VLSERVER grand.mit.edu [good; nss]
++            - udp
++            - port 7003, pref 0, weight 0
++            - address 18.9.48.14
++          - VLSERVER grand-old-opry.central.org [good; nss]
++            - udp
++            - port 7003, pref 0, weight 0
++            - address 128.2.13.219
 +
 +=head1 SEE ALSO
 +
