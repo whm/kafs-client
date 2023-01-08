@@ -7,8 +7,8 @@ Last-Update: 2023-01-07
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 Index: kafs-client/src/kafs-check-config.c
 ===================================================================
---- kafs-client.orig/src/kafs-check-config.c	2023-01-07 09:32:03.526917882 +0000
-+++ kafs-client/src/kafs-check-config.c	2023-01-07 09:51:29.301163465 +0000
+--- kafs-client.orig/src/kafs-check-config.c	2023-01-08 02:06:36.630226726 +0000
++++ kafs-client/src/kafs-check-config.c	2023-01-08 02:09:17.313725428 +0000
 @@ -12,10 +12,17 @@
  #include <stdio.h>
  #include <stdlib.h>
@@ -116,7 +116,7 @@ Index: kafs-client/src/kafs-check-config.c
  			if (!ctx.report.verbose)
  				ctx.report.verbose = verbose;
  			else
-@@ -141,16 +214,34 @@
+@@ -141,8 +214,7 @@
  		kafs_cellserv_dump(kafs_cellserv_db);
  
  	for (; *argv; argv++) {
@@ -126,11 +126,11 @@ Index: kafs-client/src/kafs-check-config.c
  		cell = kafs_lookup_cell(*argv, &ctx);
  		if (cell) {
  			printf("\n");
- 			printf("=== Found cell %s ===\n", cell->name);
+@@ -150,7 +222,25 @@
  			kafs_dump_cell(cell);
  		}
-+		kafs_clear_lookup_context(&ctx);
-+	}
+ 	}
+-
 +	if (cell_cnt == 0) {
 +		char *thiscell;
 +		thiscell = get_default_cell();
@@ -148,9 +148,8 @@ Index: kafs-client/src/kafs-check-config.c
 +			printf("\n");
 +			printf("INFO: Default cell not found %s", thiscell);
 +		}
-+		kafs_clear_lookup_context(&ctx);
- 	}
- 
--	kafs_clear_lookup_context(&ctx);
++	}
+ 	kafs_clear_lookup_context(&ctx);
++
  	return 0;
  }
