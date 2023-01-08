@@ -12,13 +12,13 @@ DH_VERBOSE = 1
 
 override_dh_auto_install:
 	mkdir -p debian/$(PACKAGE)/usr/share/man/man1
-	pod2man --release=$(VERSION) --section 1 --center=$(PACKAGE) \
+	set -e; pod2man --release=$(VERSION) --section 1 --center=$(PACKAGE) \
 		man/aklog-kafs.pod \
 		> debian/$(PACKAGE)/usr/share/man/man1/aklog-kafs.1
 	mkdir -p debian/$(PACKAGE)/usr/share/man/man5
-	pod2man --release=$(VERSION) --section 5 --center=$(PACKAGE) \
+	set -e; pod2man --release=$(VERSION) --section 5 --center=$(PACKAGE) \
 		man/kafs-client.conf.pod \
-		> debian/$(PACKAGE)/usr/share/man/man1/kafs-client.conf.5
+		> debian/$(PACKAGE)/usr/share/man/man5/kafs-client.conf.5
 	mkdir -p debian/$(PACKAGE)/usr/share/man/man7
 	set -e; for script in kafs rxrpc ; do \
 	    pod2man --release=$(VERSION) --section 7 \
