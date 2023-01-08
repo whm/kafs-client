@@ -8,7 +8,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 Index: kafs-client/man/aklog-kafs.pod
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ kafs-client/man/aklog-kafs.pod	2023-01-04 08:02:48.132134626 +0000
++++ kafs-client/man/aklog-kafs.pod	2023-01-08 18:39:10.323995130 +0000
 @@ -0,0 +1,93 @@
 +=head1 NAME
 +
@@ -92,7 +92,7 @@ Index: kafs-client/man/aklog-kafs.pod
 +
 +=head1 SEE ALSO
 +
-+kinit, kafs-preload, kafs-client.conf, keyctl
++kinit (1), keyctl (1), kafs-preload (8), kafs-client.conf (5)
 +
 +=head1 COPYRIGHT
 +
@@ -105,7 +105,7 @@ Index: kafs-client/man/aklog-kafs.pod
 +your option) any later version.
 Index: kafs-client/man/aklog-kafs.1
 ===================================================================
---- kafs-client.orig/man/aklog-kafs.1	2023-01-04 08:00:09.604667617 +0000
+--- kafs-client.orig/man/aklog-kafs.1	2023-01-08 18:36:37.532724818 +0000
 +++ /dev/null	1970-01-01 00:00:00.000000000 +0000
 @@ -1,38 +0,0 @@
 -.\"
