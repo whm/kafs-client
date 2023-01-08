@@ -24,6 +24,7 @@ kafs-client (0.5-3) unstable; urgency=medium
       is set.
   * Convert raw man pages to POD for ease of maintenance.
     - aklog-kafs
+    - kafs
     - kafs-preload
     - kafs-check-config
     - kafs-client.conf

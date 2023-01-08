@@ -19,6 +19,12 @@ override_dh_auto_install:
 	pod2man --release=$(VERSION) --section 5 --center=$(PACKAGE) \
 		man/kafs-client.conf.pod \
 		> debian/$(PACKAGE)/usr/share/man/man1/kafs-client.conf.5
+	mkdir -p debian/$(PACKAGE)/usr/share/man/man7
+	set -e; for script in kafs ; do \
+	    pod2man --release=$(VERSION) --section 7 \
+		--center=$(PACKAGE) man/$${script}.pod \
+		> debian/$(PACKAGE)/usr/share/man/man7/$${script}.7 ; \
+	done
 	mkdir -p debian/$(PACKAGE)/usr/share/man/man8
 	set -e; for script in kafs-preload kafs-check-config ; do \
 	    pod2man --release=$(VERSION) --section 8 \
