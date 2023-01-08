@@ -1,6 +1,6 @@
 Index: kafs-client/man/kafs-dns.8
 ===================================================================
---- kafs-client.orig/man/kafs-dns.8	2023-01-02 23:48:46.260993349 +0000
+--- kafs-client.orig/man/kafs-dns.8	2023-01-08 21:56:12.842167026 +0000
 +++ /dev/null	1970-01-01 00:00:00.000000000 +0000
 @@ -1,123 +0,0 @@
 -.\"
@@ -129,8 +129,8 @@ Index: kafs-client/man/kafs-dns.8
 Index: kafs-client/man/kafs-dns.pod
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ kafs-client/man/kafs-dns.pod	2023-01-08 20:52:07.475257220 +0000
-@@ -0,0 +1,165 @@
++++ kafs-client/man/kafs-dns.pod	2023-01-08 21:56:24.914741081 +0000
+@@ -0,0 +1,161 @@
 +=head1 NAME
 +
 +kafs-dns - AFS filesystem address resolution helper
@@ -217,23 +217,23 @@ Index: kafs-client/man/kafs-dns.pod
 +
 +=over
 +
-+=item -N vl-srv
++=item vl-srv
 +
 +Don't use SRV records to find Volume Location servers.
 +
-+=item -N vl-afsdb
++=item vl-afsdb
 +
 +Don't use AFSDB records to find Volume Location servers.
 +
-+=item -N vl-all
++=item vl-all
 +
 +Don't use SRV or AFSDB records to find Volume Location servers.
 +
-+=item -N vl-host
++=item vl-host
 +
 +Don't look cell name up as hostname to find a Volume Location server.
 +
-+=item -N vl-dns
++=item vl-dns
 +
 +Don't do any lookups to find Volume Location servers.  Use only the
 +static configuration.
@@ -251,48 +251,44 @@ Index: kafs-client/man/kafs-dns.pod
 +
 +=back
 +
-+.SH EXIT STATUS
-+.IP 0
-+On success.
-+.IP 1
-+If an error occurs during processing.
-+.IP 2
-+If a command line error occurs.
-+.IP 3
-+If bad configuration is detected.
-+.SH EXAMPLE
-+.PP
-+The program can be called with something like:
-+.PP
-+.RS
-+.nf
-+/usr/libexec/kafs-dns -D afsdb:example.com srv=1
-+.fi
-+.RE
-+.PP
-+The program can also be invoked indirectly with something like:
-+.PP
-+.RS
-+.nf
-+keyctl request2 dns_resolver afsdb:example.com srv=1 @s
-+.fi
-+.RE
-+.PP
-+which will return the serial number of a key that can then be displayed.
-+.SH SEE ALSO
-+.ad l
-+.nh
-+.BR kafs (7),
-+.BR kafs-client.conf (5),
-+.BR keyctl (1),
-+.BR request-key (8)
++=head1 EXIT STATUS
 +
-+.\"
-+.\" Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
-+.\" Written by David Howells (dhowells@redhat.com)
-+.\"
-+.\" This program is free software; you can redistribute it and/or
-+.\" modify it under the terms of the GNU General Public License
-+.\" as published by the Free Software Foundation; either version
-+.\" 2 of the License, or (at your option) any later version.
-+.\"
++=over
++
++=item 0 - On success
++
++=item 1 - If an error occurs during processing
++
++=item 2 - If a command line error occurs
++
++=item 3 - If bad configuration is detected.
++
++=back
++
++=head1 EXAMPLE
++
++The program can be called with something like:
++
++      /usr/libexec/kafs-dns -D afsdb:example.com srv=1
++
++The program can also be invoked indirectly with something like:
++
++      keyctl request2 dns_resolver afsdb:example.com srv=1 @s
++
++which will return the serial number of a key that can then be displayed.
++
++=head1 SEE ALSO
++
++B<kafs> (7), B<kafs-client.conf>(5), B<keyctl> (1), B<request-key>(8)
++
++=head1 COPYRIGHT
++
++Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
++
++Written by David Howells (dhowells@redhat.com)
++
++This program is free software; you can redistribute it and/or modify
++it under the terms of the GNU General Public License as published by
++the Free Software Foundation; either version 2 of the License, or (at
++your option) any later version.
++
