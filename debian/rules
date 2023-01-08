@@ -26,7 +26,7 @@ override_dh_auto_install:
 		> debian/$(PACKAGE)/usr/share/man/man7/$${script}.7 ; \
 	done
 	mkdir -p debian/$(PACKAGE)/usr/share/man/man8
-	set -e; for script in kafs-preload kafs-check-config ; do \
+	set -e; for script in kafs-preload kafs-check-config kafs-dns ; do \
 	    pod2man --release=$(VERSION) --section 8 \
 		--center=$(PACKAGE) man/$${script}.pod \
 		> debian/$(PACKAGE)/usr/share/man/man8/$${script}.8 ; \

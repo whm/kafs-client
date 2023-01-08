@@ -22,15 +22,16 @@ kafs-client (0.5-3) unstable; urgency=medium
     - Change the verbose routine to always write to syslog.
     - Add display of failure to set rootcell and sysname when debug
       is set.
+  * Update kafs-check-config to use the root cell is not cell is specified
+    on the command line.
   * Convert raw man pages to POD for ease of maintenance.
     - aklog-kafs
     - kafs
-    - kafs-preload
     - kafs-check-config
     - kafs-client.conf
+    - kafs-dns
+    - kafs-preload
     - rxrpc
-  * When no cell is specified on the kafs-check-config use the
-    root cell.
 
   [ Russ Allbery ]
   * Fix syntax of Lintian overrides for the current version of Lintian.
