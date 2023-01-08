@@ -1,6 +1,6 @@
 Index: kafs-client/man/kafs-client.conf.5
 ===================================================================
---- kafs-client.orig/man/kafs-client.conf.5	2023-01-08 02:23:32.361623669 +0000
+--- kafs-client.orig/man/kafs-client.conf.5	2023-01-08 20:15:06.961639913 +0000
 +++ /dev/null	1970-01-01 00:00:00.000000000 +0000
 @@ -1,257 +0,0 @@
 -.\" -*- nroff -*-
@@ -263,8 +263,8 @@ Index: kafs-client/man/kafs-client.conf.5
 Index: kafs-client/man/kafs-client.conf.pod
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ kafs-client/man/kafs-client.conf.pod	2023-01-08 02:54:58.941537463 +0000
-@@ -0,0 +1,250 @@
++++ kafs-client/man/kafs-client.conf.pod	2023-01-08 20:17:25.616213424 +0000
+@@ -0,0 +1,251 @@
 +=head1 NAME
 +
 +/etc/kafs/client.conf - kAFS filesystem configuration
@@ -322,7 +322,7 @@ Index: kafs-client/man/kafs-client.conf.pod
 +ignored.
 +
 +Any line that contains a label bounded by square brackets,
-+e.g. "[cells]", by itself on that line denotes a switch to the section
++e.g. C<[cells]>, by itself on that line denotes a switch to the section
 +specified by that label.
 +
 +Configuration data is specified within a named section as a series of
@@ -504,11 +504,12 @@ Index: kafs-client/man/kafs-client.conf.pod
 +
 +=head1 SEE ALSO
 +
-+kafs (7), kafs-check-config (8), kafs-preload (8) systemd (1)
++B<kafs>(7), B<kafs-check-config>(8), B<kafs-preload>(8), B<systemd>(1)
 +
 +=head1 COPYRIGHT
 +
 +Copyright (C) 2019 Red Hat, Inc. All Rights Reserved.
++
 +Written by David Howells (dhowells@redhat.com)
 +
 +This program is free software; you can redistribute it and/or modify

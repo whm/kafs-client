@@ -1,6 +1,6 @@
 Index: kafs-client/man/kafs.7
 ===================================================================
---- kafs-client.orig/man/kafs.7	2023-01-08 19:14:13.996032710 +0000
+--- kafs-client.orig/man/kafs.7	2023-01-08 20:17:51.825456076 +0000
 +++ /dev/null	1970-01-01 00:00:00.000000000 +0000
 @@ -1,130 +0,0 @@
 -.\"
@@ -136,8 +136,8 @@ Index: kafs-client/man/kafs.7
 Index: kafs-client/man/kafs.pod
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ kafs-client/man/kafs.pod	2023-01-08 19:15:22.871305121 +0000
-@@ -0,0 +1,104 @@
++++ kafs-client/man/kafs.pod	2023-01-08 20:20:58.322309212 +0000
+@@ -0,0 +1,105 @@
 +=head1 NAME
 +
 +kafs - In-kernel AFS filesystem
@@ -157,7 +157,7 @@ Index: kafs-client/man/kafs.pod
 +communications security.
 +
 +The filesystem is of type "afs" and the mount command can be used to
-+mount afs volumes manually using the "-t" flag on C<mount (8)>.
++mount afs volumes manually using the "-t" flag on B<mount>(8).
 +
 +=head1 SETTING UP
 +
@@ -183,7 +183,7 @@ Index: kafs-client/man/kafs.pod
 +would be given.
 +
 +Also any overrides for the @sys filename substitution would be
-+specified.  See C<kafs-client.conf (5)>.
++specified.  See B<kafs-client.conf>(5).
 +
 +=head1 OPERATION
 +
@@ -230,12 +230,13 @@ Index: kafs-client/man/kafs.pod
 +
 +=head1 SEE ALSO
 +
-+aklog-kafs (1), kafs-client.conf (5), keyctl (1), kinit (1),
-+rxrpc (7), session-keyring (7), systemctl (1)
++B<aklog-kafs>(1), B<kafs-client.conf>(5), B<keyctl>(1), B<kinit>(1),
++B<rxrpc>(7), B<session-keyring>(7), B<systemctl>(1)
 +
 +=head1 COPY RIGHT
 +
 +Copyright (C) 2019 Red Hat, Inc. All Rights Reserved.
++
 +Written by David Howells (dhowells@redhat.com)
 +
 +This program is free software; you can redistribute it and/or modify

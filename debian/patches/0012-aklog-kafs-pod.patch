@@ -8,8 +8,8 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 Index: kafs-client/man/aklog-kafs.pod
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ kafs-client/man/aklog-kafs.pod	2023-01-08 18:39:10.323995130 +0000
-@@ -0,0 +1,93 @@
++++ kafs-client/man/aklog-kafs.pod	2023-01-08 20:09:53.938803009 +0000
+@@ -0,0 +1,94 @@
 +=head1 NAME
 +
 +aklog-kafs - AFS Kerberos authentication tool
@@ -92,11 +92,12 @@ Index: kafs-client/man/aklog-kafs.pod
 +
 +=head1 SEE ALSO
 +
-+kinit (1), keyctl (1), kafs-preload (8), kafs-client.conf (5)
++B<kinit>(1), B<keyctl> (1), B<kafs-preload> (8), B<kafs-client.conf>(5)
 +
 +=head1 COPYRIGHT
 +
 +Copyright (C) 2018 Red Hat, Inc. All Rights Reserved.
++
 +Written by David Howells <dhowells@redhat.com>
 +
 +This program is free software; you can redistribute it and/or modify
@@ -105,7 +106,7 @@ Index: kafs-client/man/aklog-kafs.pod
 +your option) any later version.
 Index: kafs-client/man/aklog-kafs.1
 ===================================================================
---- kafs-client.orig/man/aklog-kafs.1	2023-01-08 18:36:37.532724818 +0000
+--- kafs-client.orig/man/aklog-kafs.1	2023-01-08 20:08:00.297417728 +0000
 +++ /dev/null	1970-01-01 00:00:00.000000000 +0000
 @@ -1,38 +0,0 @@
 -.\"
