@@ -26,6 +26,7 @@ kafs-client (0.5-3) unstable; urgency=medium
     - aklog-kafs
     - kafs-preload
     - kafs-check-config
+    - kafs-client.conf
   * When no cell is specified on the kafs-check-config use the
     root cell.
 
