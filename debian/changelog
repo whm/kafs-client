@@ -28,6 +28,7 @@ kafs-client (0.5-3) unstable; urgency=medium
     - kafs-preload
     - kafs-check-config
     - kafs-client.conf
+    - rxrpc
   * When no cell is specified on the kafs-check-config use the
     root cell.
 

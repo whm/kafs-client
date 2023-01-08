@@ -15,3 +15,4 @@
 0015-kafs-check-config-pod.patch
 0016-kafs-client-conf-pod.patch
 0017-kafs-pod.patch
+0018-rxrpc-pod.patch
