@@ -16,8 +16,10 @@ override_dh_auto_install:
 		man/aklog-kafs.pod \
 		> debian/$(PACKAGE)/usr/share/man/man1/aklog-kafs.1
 	mkdir -p debian/$(PACKAGE)/usr/share/man/man8
-	pod2man --release=$(VERSION) --section 8 --center=$(PACKAGE) \
-		man/kafs-preload.pod \
-		> debian/$(PACKAGE)/usr/share/man/man8/kafs-preload.8
+	set -e; for script in kafs-preload kafs-check-config ; do \
+	    pod2man --release=$(VERSION) --section 8 \
+		--center=$(PACKAGE) man/$${script}.pod \
+		> debian/$(PACKAGE)/usr/share/man/man8/$${script}.8 ; \
+	done
 	dh_auto_install
 	dh_installsystemd --name=afs

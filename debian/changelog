@@ -25,6 +25,7 @@ kafs-client (0.5-3) unstable; urgency=medium
   * Convert raw man pages to POD for ease of maintenance.
     - aklog-kafs
     - kafs-preload
+    - kafs-check-config
   * When no cell is specified on the kafs-check-config use the
     root cell.
 

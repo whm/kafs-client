@@ -1,0 +1,230 @@
+Index: kafs-client/man/kafs-check-config.8
+===================================================================
+--- kafs-client.orig/man/kafs-check-config.8	2023-01-07 07:25:26.000000000 +0000
++++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+@@ -1,78 +0,0 @@
+-.\"
+-.\" Copyright (C) 2019 Red Hat, Inc. All Rights Reserved.
+-.\" Written by David Howells (dhowells@redhat.com)
+-.\"
+-.\" This program is free software; you can redistribute it and/or
+-.\" modify it under the terms of the GNU General Public License
+-.\" as published by the Free Software Foundation; either version
+-.\" 2 of the License, or (at your option) any later version.
+-.\"
+-.TH KAFS-CHECK-CONFIG 1 "16 Apr 2019" Linux "AFS Config Checker"
+-.SH NAME
+-kafs-check-config \- AFS configuration check tool
+-.SH SYNOPSIS
+-\fBkafs-check-config\fR [OPTION]... [<cellname>]*
+-.P
+-Where options are:
+-.P
+-.RS
+-[-46PDvv] [-c <conffile>]* [-N <restriction>]
+-.RE
+-.SH DESCRIPTION
+-This program is used to check the configuration for the in-kernel AFS
+-filesystem (kAFS).  This configuration is used when systemd mounts the
+-filesystem to load up the cell database and create cell automounts in the /afs
+-directory.
+-.P
+-The configuration is also used by the kernel name resolver upcall to provide
+-static configuration for some cells and to specify overrides and limits on DNS
+-lookups.
+-.P
+-If a list of \fB<cellname>\fR arguments is given, the listed cells will be
+-dumped, including the sources of the Volume Location records and address
+-records.
+-.P
+-The available options are:
+-.SH ARGUMENTS
+-.IP -4
+-Only show IPv4 addresses in the dump.
+-.IP -6
+-Only show IPv6 addresses in the dump.
+-.IP -P
+-Dump the parse tree of the configuration file(s).
+-.IP -D
+-Dump the cell database extracted from the configuration.
+-.IP -v
+-Increase the verbosity of the output.  This may be specified multiple times.
+-.IP "-c <conffile>"
+-Specify a configuration file to read instead of the system default.  This may
+-be specified multiple times and the configuration files are read and applied in
+-order.
+-.IP "-N <restriction>"
+-Apply a restriction to the lookup performed for the listed cells (if any are).
+-Restrictions include:
+-.RS
+-.IP "-N vl-srv"
+-Don't use SRV records to find Volume Location servers.
+-.IP "-N vl-afsdb"
+-Don't use AFSDB records to find Volume Location servers.
+-.IP "-N vl-all"
+-Don't use SRV or AFSDB records to find Volume Location servers.
+-.IP "-N vl-host"
+-Don't look cell name up as hostname to find a Volume Location server.
+-.IP "-N vl-dns"
+-Don't do any lookups to find Volume Location servers.  Use only the static
+-configuration.
+-.RE
+-.SH EXIT STATUS
+-.IP 0
+-If check okay and any dumping succeeded.
+-.IP 1
+-If an error occurs during processing.
+-.IP 2
+-If a command line error occurs.
+-.SH SEE ALSO
+-.ad l
+-.nh
+-.BR kafs (7),
+-.BR kafs\-client.conf (5)
+Index: kafs-client/man/kafs-check-config.pod
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ kafs-client/man/kafs-check-config.pod	2023-01-08 00:41:03.870430355 +0000
+@@ -0,0 +1,142 @@
++=head1 NAME
++
++kafs-check-config - AFS configuration check tool
++
++=head1 SYNOPSIS
++
++kafs-check-config [-46PDvv] [-c <conffile>]* [-N <restriction>] [<cellname>]*
++
++=head1 DESCRIPTION
++
++This program is used to check the configuration for the in-kernel AFS
++filesystem (kAFS).  This configuration is used when systemd mounts the
++filesystem to load up the cell database and create cell automounts in
++the /afs directory.
++
++The configuration is also used by the kernel name resolver upcall to
++provide static configuration for some cells and to specify overrides
++and limits on DNS lookups.
++
++If a list of C<cellname> arguments is given, the listed cells will be
++dumped, including the sources of the Volume Location records and
++address records.
++
++=head1 OPTIONS
++
++=over
++
++=item -4
++
++Only show IPv4 addresses in the dump.
++
++=item -6
++
++Only show IPv6 addresses in the dump.
++
++=item -P
++
++Dump the parse tree of the configuration file(s).
++
++=item -D
++
++Dump the cell database extracted from the configuration.
++
++=item -v
++
++Increase the verbosity of the output.  This may be specified multiple
++times.
++
++=item -c <conffile>
++
++Specify a configuration file to read instead of the system default.
++This may be specified multiple times and the configuration files are
++read and applied in order.
++
++=item -N <restriction>
++
++Apply a restriction to the lookup performed for the listed cells (if
++any are).  Valid restrictions include:
++
++=over
++
++=item vl-srv
++
++Don't use SRV records to find Volume Location servers.
++
++=item vl-afsdb
++
++Don't use AFSDB records to find Volume Location servers.
++
++=item vl-all
++
++Don't use SRV or AFSDB records to find Volume Location servers.
++
++=item vl-host
++
++Don't look cell name up as hostname to find a Volume Location server.
++
++vl-dns
++
++Don't do any lookups to find Volume Location servers.  Use only the
++static configuration.
++
++=back
++
++=back
++
++=head1 ARGUMENT
++
++=over
++
++=item <cellname>
++
++The AFS cell name to display.  Multiple cells may be specified.  If no
++cell name is specified the default cell specified in
++C</proc/net/afs/rootcell> is displayed.
++
++=back
++
++=head1 EXIT STATUS
++
++=over
++
++=item 0 - If check okay and any dumping succeeded
++
++=item 1 - If an error occurs during processing
++
++=item 2 - If a command line error occurs
++
++=back
++
++=head1 EXAMPLES
++
++To display the configuration for the default cell:
++
++        # kafs-check-config
++
++        === Found cell some-cell.org ===
++          - use-dns=no
++          - show-cell=no
++          - status: no-lookup, from config
++          - VLSERVER shelter-4.some-cell.org [good; nss]
++            - address 10.0.0.48
++          - VLSERVER shelter-5.some-cell.org [good; nss]
++            - address 10.0.0.54
++
++To display two specific cells:
++
++        # kafs-check-config ir.stanford.edu slac.stanford.edu
++
++=head1 SEE ALSO
++
++kafs (7), kafs-client.conf (5), kafs-preload (8)
++
++=head1 COPYRIGHT
++
++Copyright (C) 2019 Red Hat, Inc. All Rights Reserved.
++Written by David Howells (dhowells@redhat.com)
++
++This program is free software; you can redistribute it and/or modify
++it under the terms of the GNU General Public License as published by
++the Free Software Foundation; either version 2 of the License, or (at
++your option) any later version.
