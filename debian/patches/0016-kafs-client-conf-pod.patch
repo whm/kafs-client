@@ -1,6 +1,12 @@
+Description: Convert kafs-client.conf man page to POD
+ For ease of maintenance convert kafs-client.conf man page to POD.
+Author: Bill MacAllister <bill@ca-zephyr.org>
+Last-Update: 2023-01-09
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 Index: kafs-client/man/kafs-client.conf.5
 ===================================================================
---- kafs-client.orig/man/kafs-client.conf.5	2023-01-08 21:24:53.480737587 +0000
+--- kafs-client.orig/man/kafs-client.conf.5	2023-01-09 07:29:44.916842353 +0000
 +++ /dev/null	1970-01-01 00:00:00.000000000 +0000
 @@ -1,257 +0,0 @@
 -.\" -*- nroff -*-
@@ -263,7 +269,7 @@ Index: kafs-client/man/kafs-client.conf.5
 Index: kafs-client/man/kafs-client.conf.pod
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ kafs-client/man/kafs-client.conf.pod	2023-01-08 21:25:15.089765375 +0000
++++ kafs-client/man/kafs-client.conf.pod	2023-01-09 07:29:44.904841781 +0000
 @@ -0,0 +1,251 @@
 +=head1 NAME
 +

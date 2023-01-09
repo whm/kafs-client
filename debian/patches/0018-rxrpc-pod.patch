@@ -1,6 +1,12 @@
+Description: Convert rxrpc man page to POD
+ For ease of maintenance convert the rxrpc man page to POD.
+Author: Bill MacAllister <bill@ca-zephyr.org>
+Last-Update: 2023-01-09
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 Index: kafs-client/man/rxrpc.7
 ===================================================================
---- kafs-client.orig/man/rxrpc.7	2023-01-02 23:48:46.264993543 +0000
+--- kafs-client.orig/man/rxrpc.7	2023-01-09 07:33:17.438987214 +0000
 +++ /dev/null	1970-01-01 00:00:00.000000000 +0000
 @@ -1,273 +0,0 @@
 -.\"
@@ -279,7 +285,7 @@ Index: kafs-client/man/rxrpc.7
 Index: kafs-client/man/rxrpc.pod
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ kafs-client/man/rxrpc.pod	2023-01-08 19:59:07.008155144 +0000
++++ kafs-client/man/rxrpc.pod	2023-01-09 07:33:17.430986832 +0000
 @@ -0,0 +1,281 @@
 +=head1 NAME
 +
