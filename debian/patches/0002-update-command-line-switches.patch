@@ -1,7 +1,7 @@
 From 3529dbbb73a51817de52f6a43d9fbf6655008313 Mon Sep 17 00:00:00 2001
 From: Bill MacAllister <bill@ca-zephyr.org>
 Date: Fri, 16 Apr 2021 06:17:40 +0000
-Subject: [PATCH 32/36] New upstream version 0.6
+Subject: [PATCH 32/36] aklog-kafs CLI changes
 
 ---
  src/aklog-kafs.c | 65 +++++++++++++++++++++++++++++++++++++++---------

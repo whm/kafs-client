@@ -2,7 +2,7 @@ From: Bill MacAllister <bill@ca-zephyr.org>
 Date: Sun Jan 1 18:42:06 2023
 Subject: Updates to preload
 
-* Add .c as a synomyn to -v.
+* Add -d as a synomyn to -v.
 * Use the same policy for -d as implemented in kafs-aklog, namely
   -d can be specified more than once increasing the level of debug
   messages.
