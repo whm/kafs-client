@@ -1,0 +1,171 @@
+=head1 NAME
+
+kafs-check-config - AFS configuration check tool
+
+=head1 SYNOPSIS
+
+kafs-check-config [-46PDvv] [-c <conffile>]* [-N <restriction>] [<cellname>]*
+
+=head1 DESCRIPTION
+
+This program is used to check the configuration for the in-kernel AFS
+filesystem (kAFS).  This configuration is used when systemd mounts the
+filesystem to load up the cell database and create cell automounts in
+the /afs directory.
+
+The configuration is also used by the kernel name resolver upcall to
+provide static configuration for some cells and to specify overrides
+and limits on DNS lookups.
+
+If a list of C<cellname> arguments is given, the listed cells will be
+dumped, including the sources of the Volume Location records and
+address records.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-4>
+
+Only show IPv4 addresses in the dump.
+
+=item B<-6>
+
+Only show IPv6 addresses in the dump.
+
+=item B<-P>
+
+Dump the parse tree of the configuration file(s).
+
+=item B<-D>
+
+Dump the cell database extracted from the configuration.
+
+=item B<-v>
+
+Increase the verbosity of the output.  This may be specified multiple
+times.
+
+=item B<-c <conffile>>
+
+Specify a configuration file to read instead of the system default.
+This may be specified multiple times and the configuration files are
+read and applied in order.
+
+=item B<-N <restriction>>
+
+Apply a restriction to the lookup performed for the listed cells (if
+any are).  Valid restrictions include:
+
+=over
+
+=item vl-srv
+
+Don't use SRV records to find Volume Location servers.
+
+=item vl-afsdb
+
+Don't use AFSDB records to find Volume Location servers.
+
+=item vl-all
+
+Don't use SRV or AFSDB records to find Volume Location servers.
+
+=item vl-host
+
+Don't look cell name up as hostname to find a Volume Location server.
+
+vl-dns
+
+Don't do any lookups to find Volume Location servers.  Use only the
+static configuration.
+
+=back
+
+=back
+
+=head1 ARGUMENT
+
+=over
+
+=item <cellname>
+
+The AFS cell name to display.  Multiple cells may be specified.  If no
+cell name is specified the default cell specified in
+C</proc/net/afs/rootcell> is displayed.
+
+=back
+
+=head1 EXIT STATUS
+
+=over
+
+=item 0 - If check okay and any dumping succeeded
+
+=item 1 - If an error occurs during processing
+
+=item 2 - If a command line error occurs
+
+=back
+
+=head1 EXAMPLES
+
+To display the configuration for the default cell:
+
+        # kafs-check-config
+
+        === Found cell some-cell.org ===
+          - use-dns=no
+          - show-cell=no
+          - status: no-lookup, from config
+          - VLSERVER shelter-4.some-cell.org [good; nss]
+            - address 10.0.0.48
+          - VLSERVER shelter-5.some-cell.org [good; nss]
+            - address 10.0.0.54
+
+To display two specific cells:
+
+        # kafs-check-config ir.stanford.edu grand.central.org
+
+        === Found cell ir.stanford.edu ===
+          - show-cell=no
+          - status: good, from SRV
+          - VLSERVER afsdb3.stanford.edu [good; nss]
+            - udp
+            - port 7003, pref 0, weight 0
+            - address 171.64.7.246
+          - VLSERVER afsdb2.stanford.edu [good; nss]
+            - udp
+            - port 7003, pref 0, weight 0
+            - address 171.64.7.234
+          - VLSERVER afsdb1.stanford.edu [good; nss]
+            - udp
+            - port 7003, pref 0, weight 0
+            - address 171.64.7.222
+
+        === Found cell grand.central.org ===
+          - show-cell=no
+          - status: good, from SRV
+          - VLSERVER grand.mit.edu [good; nss]
+            - udp
+            - port 7003, pref 0, weight 0
+            - address 18.9.48.14
+          - VLSERVER grand-old-opry.central.org [good; nss]
+            - udp
+            - port 7003, pref 0, weight 0
+            - address 128.2.13.219
+
+=head1 SEE ALSO
+
+B<kafs>(7), B<kafs-client.conf>(5), B<kafs-preload>(8)
+
+=head1 COPYRIGHT
+
+Copyright (C) 2019 Red Hat, Inc. All Rights Reserved.
+
+Written by David Howells (dhowells@redhat.com)
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at
+your option) any later version.
