@@ -4,10 +4,8 @@ Author: Bill MacAllister <bill@ca-zephyr.org>
 Last-Update: 2023-01-09
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
-Index: kafs-client/man/kafs-client.conf.5
-===================================================================
---- kafs-client.orig/man/kafs-client.conf.5	2023-01-09 07:29:44.916842353 +0000
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+--- kafs-client.orig/man/kafs-client.conf.5
++++ /dev/null
 @@ -1,257 +0,0 @@
 -.\" -*- nroff -*-
 -.\" Copyright (C) 2019 Red Hat, Inc. All Rights Reserved.
@@ -266,10 +264,8 @@ Index: kafs-client/man/kafs-client.conf.5
 -.BR kafs (7),
 -.BR kafs\-check\-config (8),
 -.BR systemd (1)
-Index: kafs-client/man/kafs-client.conf.pod
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ kafs-client/man/kafs-client.conf.pod	2023-01-09 07:29:44.904841781 +0000
+--- /dev/null
++++ kafs-client/man/kafs-client.conf.pod
 @@ -0,0 +1,251 @@
 +=head1 NAME
 +
@@ -365,7 +361,7 @@ Index: kafs-client/man/kafs-client.conf.pod
 +      	use_dns = no
 +      }*
 +
-+Strings that are intepreted as boolean values are classed as false if
++Strings that are interpreted as boolean values are classed as false if
 +they match one of: "0", "f", "false", "n", "no", or "off".  Boolean
 +values are classed as true if they match one off: "1", "t", "true",
 +"y", "yes", or "on".  Boolean matches are case-independent.
