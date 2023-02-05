@@ -1,0 +1,94 @@
+=head1 NAME
+
+aklog-kafs - AFS Kerberos authentication tool
+
+=head1 SYNOPSIS
+
+aklog-kafs [-dhkV] [<cell> [<realm>]]
+
+=head1 DESCRIPTION
+
+This program is used to get an authentication ticket from Kerberos
+that can be used by the in-kernel AFS filesystem (kAFS) to perform
+authenticated and encrypted accesses to the an AFS cell.  Without this
+only unencrypted anonymous accesses can be made.
+
+Before calling this, the C<kinit> program or similar should be invoked
+to authenticate with the appropriate Kerberos server.
+
+=head1 ARGUMENTS
+
+=over
+
+=item <cell>
+
+This is the name of the cell with which the ticket is intended to be
+used.  If not given, the name of the default cell will be read from
+C</proc/net/afs/rootcell> and used instead.
+
+The root cell can be set in the C</etc/kafs/client> configuration
+file by setting the C<thiscell> in the C<[defaults]> section.  If
+the value of thiscell is changed in the configuration file than
+C<kafs-preload> needs to be run to refresh the value in the
+C</proc/net/afs/rootcell> file.
+
+=item <realm>
+
+This is the name of the Kerberos realm from which the ticket will be
+obtained.
+
+=back
+
+=head1 OPTIONS
+
+=over
+
+=item C<-h>
+
+Display help text and exit.
+
+=item C<-d>
+
+Display processing messages.  Specifying C<-d> more than once increases
+the verbosity of the messages.
+
+=item C<-k>
+
+Manually specify keyring to add AFS key into.  Otherwise, a session
+keyring will be used first if found before automatically switching to
+the uid-session keyring.
+
+Valid values are:
+
+         session
+         uid-session
+
+=item C<-V>
+
+Show version and exit.
+
+=back
+
+=head1 EXAMPLE
+
+      # aklog-kafs -d
+      Default cell from /proc/net/afs/rootcell: ca-zephyr.org
+      Realm: CA-ZEPHYR.ORG
+      CELL ca-zephyr.org
+      PRINC afs/ca-zephyr.org@CA-ZEPHYR.ORG
+      successfully added key: 44095043 to session keyring
+
+=head1 SEE ALSO
+
+B<kinit>(1), B<keyctl> (1), B<kafs-preload> (8), B<kafs-client.conf>(5)
+
+=head1 COPYRIGHT
+
+Copyright (C) 2018 Red Hat, Inc. All Rights Reserved.
+
+Written by David Howells <dhowells@redhat.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at
+your option) any later version.
