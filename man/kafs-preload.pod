@@ -1,0 +1,71 @@
+=head1 NAME
+
+kafs-preload - AFS filesystem configuration preloader
+
+=head1 SYNOPSIS
+
+kafs-preload [-Dv] [<configuration file>]
+
+=head1 DESCRIPTION
+
+This program loads static configuration into the AFS filesystem, such
+as preloading cells, setting the workstation cell (@cell), and the
+system identifier list (@sys).
+
+This program is not usually invoked directly, but rather is usually
+called from a systemd service unit file.  If the properties sysname
+or thiscell are changed in the kafs client configuration file running
+kafs-preload will update the /proc files.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-D>
+
+Execute in debug mode.  Instead of writing to various /proc files,
+write to stdout.
+
+=item B<-v>
+
+Increase the verbosity of the output.  This may be specified multiple
+times.
+
+=back
+
+=head1 EXIT STATUS
+
+=over
+
+=item 0 - On success
+
+=item 1 - If an error occurs during processing
+
+=item 2 - If a command line error occurs
+
+=item 3 - If bad configuration is detected
+
+=back
+
+=head1 EXAMPLE
+
+      # kafs-preload -v /etc/kafs/client.conf
+      kAFS: Preloading cell database
+      INFO: rootcell set to ca-zephyr.org
+      INFO: sysname set to x86_64
+
+
+=head1 SEE ALSO
+
+B<kafs-client.conf>(5), B<aklog-kafs>(1), B<kafs>(7), B<proc>(5)
+
+=head1 COPYRIGHT
+
+Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
+
+Written by David Howells (dhowells@redhat.com)
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at
+your option) any later version.
