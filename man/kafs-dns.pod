@@ -1,0 +1,161 @@
+=head1 NAME
+
+kafs-dns - AFS filesystem address resolution helper
+
+=head1 SYNOPSIS
+
+      /usr/libexec/kafs-dns\fR [OPTION]... <key_serial>
+      /usr/libexec/kafs-dns\fR -D [OPTION]... <desc> <calloutinfo>
+      /usr/libexec/kafs-dns\fR -V
+
+Where options are:
+
+      [-v] [-c <conffile>]* [-N <restriction>] [-o <dumpfile>]
+
+=head1 DESCRIPTION
+
+This program is invoked by the B<request-key>(8) kernel upcall
+handling program to handle an address resolution request on behalf of
+the in-kernel AFS filesystem driver to find the Volume Location
+servers for a cell.  It is capable of using static configuration, NSS
+and DNS SRV and AFSDB record lookups.
+
+Note that this program is not meant to be called directly, though it
+does have a debugging mode that can be used.
+
+The first form of the command, without the \fB-D\fR flag cannot be
+called directly as it requires an under-construction kernel key as its
+parameter.
+
+The debugging form, in which \fB-D\fR is given, doesn't require a key, but
+must be given a proposed key description and a callout information string.
+Information about what it is doing is dumped to the output.  The result blob
+may be binary and so is not dumped to stdout, but can be dumped to a file with
+C<-o\ <dumpfile>>.
+
+=head1 ARGUMENTS
+
+The key description, C<desc>, should be the name of a cell prefixed by
+C<afsdb:>.
+
+The callout information string, C<calloutinfo>, is a comma separated list
+of none or more of the following items:
+
+=over
+
+=item ipv4
+
+Get IPv4 addresses only.
+
+=item ipv6
+
+Get IPv6 addresses only.
+
+=item srv=<ver>
+
+Allow the extra information that can be gleaned from SRV records to be
+rendered as output format C<ver>, where C<ver> is a number.
+
+=back
+
+=head1 OPTIONS
+
+=over
+
+=item B<-D>
+
+Execute in debug mode.
+
+=item B<-v>
+
+Increase the verbosity of the output.  This may be specified multiple
+times.
+
+=item B<-c <conffile>>
+
+Specify a configuration file to read instead of the system default.  This may
+be specified multiple times and the configuration files are read and applied in
+order.
+
+=item B<-N <restriction>>
+
+Apply a restriction to the lookup performed for the listed cells (if
+any are).  Restrictions include:
+
+=over
+
+=item vl-srv
+
+Don't use SRV records to find Volume Location servers.
+
+=item vl-afsdb
+
+Don't use AFSDB records to find Volume Location servers.
+
+=item vl-all
+
+Don't use SRV or AFSDB records to find Volume Location servers.
+
+=item vl-host
+
+Don't look cell name up as hostname to find a Volume Location server.
+
+=item vl-dns
+
+Don't do any lookups to find Volume Location servers.  Use only the
+static configuration.
+
+=back
+
+=item B<-o <dumpfile>>
+
+Specify a file in which to dump the proposed payload with which to
+instantiate a resolver key.
+
+=item B<-V>
+
+Display version information and exit.
+
+=back
+
+=head1 EXIT STATUS
+
+=over
+
+=item 0 - On success
+
+=item 1 - If an error occurs during processing
+
+=item 2 - If a command line error occurs
+
+=item 3 - If bad configuration is detected.
+
+=back
+
+=head1 EXAMPLE
+
+The program can be called with something like:
+
+      /usr/libexec/kafs-dns -D afsdb:example.com srv=1
+
+The program can also be invoked indirectly with something like:
+
+      keyctl request2 dns_resolver afsdb:example.com srv=1 @s
+
+which will return the serial number of a key that can then be displayed.
+
+=head1 SEE ALSO
+
+B<kafs> (7), B<kafs-client.conf>(5), B<keyctl> (1), B<request-key>(8)
+
+=head1 COPYRIGHT
+
+Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
+
+Written by David Howells (dhowells@redhat.com)
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at
+your option) any later version.
+
