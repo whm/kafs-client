@@ -1,0 +1,91 @@
+kafs-client (0.5-4.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * No source change upload to move systemd units into /usr.
+    (Closes: #1072078)
+
+ -- Chris Hofstaedtler <zeha@debian.org>  Fri, 07 Jun 2024 15:07:07 +0200
+
+kafs-client (0.5-4) unstable; urgency=medium
+
+  [ Bill MacAllister ]
+  * Update kafs-check-config to use the root cell is not cell is specified
+    on the command line.
+  * Convert raw man pages to POD for ease of maintenance.
+    - aklog-kafs
+    - kafs
+    - kafs-check-config
+    - kafs-client.conf
+    - kafs-dns
+    - kafs-preload
+    - rxrpc
+  * Fix various manual page bugs and add additional information.
+
+  [ Russ Allbery ]
+  * Use /usr/share/dpkg/pkg-info.mk to get the package version and source
+    package name instead of parsing the output of dpkg-parsechangelog.
+
+ -- Russ Allbery <rra@debian.org>  Sun, 05 Feb 2023 12:48:30 -0800
+
+kafs-client (0.5-3) unstable; urgency=medium
+
+  [ Bill MacAllister]
+  * Patches from Spencer Olson <olsonse.umich.edu> for aklog-kafs.
+    - Fix minimal command line argument parsing
+    - Use Chaskiel Grundman s suggestion for switching key
+    - Ensure that aklog-kafs frees memory and passes valgrind/memgrind
+      leak test.
+    - add commandline option to show build version
+    - make display_usage use proper exit status
+  * Patches from Debian Janitor <janitor@jelmer.uk>
+    - Use canonical URL in Vcs-Git.
+    - Update standards version to 4.6.0, no changes needed.
+  * In aklog-kafs remove the -v, verbose option, and update the -d
+    option to be specified multiple times increasing the verbosity
+    of the output.
+  * Add test for failure to set the default cell and add a message
+    describing the remedy.
+  * Updates to preload
+    - Add -d as a synomyn to -v.
+    - Use the same policy for -d as implemented in kafs-aklog, namely
+      -d can be specified more than once increasing the level of debug
+      messages.
+    - Change the verbose routine to always write to syslog.
+    - Add display of failure to set rootcell and sysname when debug
+      is set.
+
+  [ Russ Allbery ]
+  * Fix syntax of Lintian overrides for the current version of Lintian.
+  * Update standards version to 4.6.2 (no changes required).
+  * Add myself to Uploaders.
+
+ -- Russ Allbery <rra@debian.org>  Mon, 02 Jan 2023 09:50:27 -0800
+
+kafs-client (0.5-2) unstable; urgency=medium
+
+  * Remove 0.4 patch files not needed in 0.5.
+  * Add in missing install of the man page for kafs-preload.
+  * Install kafs-dns man page.
+
+ -- Bill MacAllister <bill@ca-zephyr.org>  Sat, 18 Jul 2020 22:13:18 +0000
+
+kafs-client (0.5-1) unstable; urgency=medium
+
+  * New upstream version.
+  * Adjust patches to match new upstream version.
+
+ -- Bill MacAllister <bill@ca-zephyr.org>  Sun, 05 Jul 2020 08:00:19 +0000
+
+kafs-client (0.4-1) unstable; urgency=medium
+
+  * New upstream version that removes the dependency on OpenSSL.
+  * Patches from Russ Allbery to clean up debian build.
+  * Added missing man pages for some executables.
+
+ -- Bill MacAllister <bill@ca-zephyr.org>  Sun, 07 Jun 2020 20:48:04 +0000
+
+kafs-client (0.3-1) unstable; urgency=low
+
+  * Initial release. Closes: #933326
+
+ -- Bill MacAllister <bill@ca-zephyr.org>  Sun, 08 Mar 2020 08:20:23 +0000
