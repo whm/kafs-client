@@ -6,3 +6,4 @@ kafs-dns
 *.os
 libkafs_client.so*
 TAGS
+.pc
