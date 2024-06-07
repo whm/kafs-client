@@ -1,0 +1,33 @@
+#!/usr/bin/make -f
+
+include /usr/share/dpkg/pkg-info.mk
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+bindnow
+export DH_VERBOSE = 1
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	mkdir -p debian/$(DEB_SOURCE)/usr/share/man/man1
+	pod2man --release=$(DEB_VERSION) --section 1 \
+		--center=$(DEB_SOURCE) man/aklog-kafs.pod \
+		> debian/$(DEB_SOURCE)/usr/share/man/man1/aklog-kafs.1
+	mkdir -p debian/$(DEB_SOURCE)/usr/share/man/man5
+	pod2man --release=$(DEB_VERSION) --section 5 \
+		--center=$(DEB_SOURCE) man/kafs-client.conf.pod \
+		> debian/$(DEB_SOURCE)/usr/share/man/man5/kafs-client.conf.5
+	mkdir -p debian/$(DEB_SOURCE)/usr/share/man/man7
+	set -e; for script in kafs rxrpc ; do \
+	    pod2man --release=$(DEB_VERSION) --section 7 \
+		--center=$(DEB_SOURCE) man/$${script}.pod \
+		> debian/$(DEB_SOURCE)/usr/share/man/man7/$${script}.7 ; \
+	done
+	mkdir -p debian/$(DEB_SOURCE)/usr/share/man/man8
+	set -e; for script in kafs-preload kafs-check-config kafs-dns ; do \
+	    pod2man --release=$(DEB_VERSION) --section 8 \
+		--center=$(DEB_SOURCE) man/$${script}.pod \
+		> debian/$(DEB_SOURCE)/usr/share/man/man8/$${script}.8 ; \
+	done
+	dh_auto_install
+	dh_installsystemd --name=afs
