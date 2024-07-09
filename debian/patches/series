@@ -18,3 +18,4 @@
 0018-rxrpc-pod.patch
 0019-kafs-dns-pod.patch
 0020-Remove-word-size-compiler-flags.patch
+auto-gitignore
