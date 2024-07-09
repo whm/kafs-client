@@ -13,6 +13,7 @@ kafs-client (0.5-5) UNRELEASED; urgency=medium
   * Add missing include to the kafs-check-config patch to support using
     the default cell, fixing build failures with GCC 14. Thanks to
     Matthias Klose for the report. (Closes: #1075106)
+  * Update standards version to 4.7.0 (no changes required).
 
  -- Russ Allbery <rra@debian.org>  Mon, 08 Jul 2024 18:42:02 -0700
 
