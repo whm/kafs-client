@@ -1,0 +1,75 @@
+Description: Remove word size compiler flags
+Author: Russ Allbery <rra@debian.org>
+Last-Update: 2024-07-08
+Forwarded: not-needed
+
+Upstream attempts to determine whether the build is 32-bit or 64-bit
+and adds -m32 or -m64 to the compiler flags. This is unnecessary on
+Debian, since the default compiler for a package will be configured
+to build for the appropriate word size, and harmful since some
+Debian architectures do not support the -m64 flag. Remove this code
+so that CFLAGS will be left unchanged.
+
+Signed-of-by: Russ Allbery <rra@debian.org>
+---
+ Makefile            | 15 ---------------
+ src/Makefile.config | 16 ----------------
+ 2 files changed, 31 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 00fe618..c36b719 100644
+--- a/Makefile
++++ b/Makefile
+@@ -19,21 +19,6 @@ LNS		:= ln -sf
+ ###############################################################################
+ VERSION		:= $(word 2,$(shell grep "^Version:" $(SPECFILE)))
+ 
+-###############################################################################
+-#
+-# Guess at the appropriate word size
+-#
+-###############################################################################
+-BUILDFOR	:= $(shell file /usr/bin/make | sed -e 's!.*ELF \(32\|64\)-bit.*!\1!')-bit
+-
+-ifeq ($(BUILDFOR),32-bit)
+-CFLAGS		+= -m32
+-else
+-ifeq ($(BUILDFOR),64-bit)
+-CFLAGS		+= -m64
+-endif
+-endif
+-
+ ###############################################################################
+ #
+ # Build stuff
+diff --git a/src/Makefile.config b/src/Makefile.config
+index 7f4004a..8bf69e1 100644
+--- a/src/Makefile.config
++++ b/src/Makefile.config
+@@ -37,21 +37,6 @@ DEVELLIB	:= libkafs_client.so
+ SONAME		:= $(DEVELLIB).$(APIMAJOR)
+ LIBNAME		:= $(DEVELLIB).$(APIVERSION)
+ 
+-###############################################################################
+-#
+-# Guess at the appropriate word size
+-#
+-###############################################################################
+-BUILDFOR	:= $(shell file /usr/bin/make | sed -e 's!.*ELF \(32\|64\)-bit.*!\1!')-bit
+-
+-ifeq ($(BUILDFOR),32-bit)
+-CFLAGS		+= -m32
+-else
+-ifeq ($(BUILDFOR),64-bit)
+-CFLAGS		+= -m64
+-endif
+-endif
+-
+ ###############################################################################
+ #
+ # Guess at the appropriate lib directory and word size
+@@ -60,4 +45,3 @@ endif
+ ifeq ($(origin LIBDIR),undefined)
+ LIBDIR		:= $(shell ldd /usr/bin/make | grep '\(/libc\)' | sed -e 's!.*\(/.*\)/libc[.].*!\1!')
+ endif
+-BUILDFOR	:= $(shell file /usr/bin/make | sed -e 's!.*ELF \(32\|64\)-bit.*!\1!')-bit

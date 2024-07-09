@@ -1,3 +1,14 @@
+kafs-client (0.5-5) UNRELEASED; urgency=medium
+
+  * Disable upstream build code that adds -m32 or -m64 based on the
+    dynamically calculated word size. This code is unnecessary on Debian,
+    where the default compiler behavior should be used, and causes
+    problems on some Debian architectures that don't support -m64. Thanks
+    to Yue Gui, Lucas Nussbaum, and wuruilong for the reports.
+    (Closes: #976557, #1069757)
+
+ -- Russ Allbery <rra@debian.org>  Mon, 08 Jul 2024 18:42:02 -0700
+
 kafs-client (0.5-4.1) unstable; urgency=medium
 
   * Non-maintainer upload.
