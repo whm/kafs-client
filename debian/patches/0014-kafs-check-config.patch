@@ -2,18 +2,17 @@ Description: Use default cell is none specified
  If no cell names are specified on the command line try and use the
  default cell.
 Author: Bill MacAllister <bill@ca-zephyr.org>
-Last-Update: 2023-01-07 
+Last-Update: 2024-07-08
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
-Index: kafs-client/src/kafs-check-config.c
-===================================================================
---- kafs-client.orig/src/kafs-check-config.c	2023-01-08 02:06:36.630226726 +0000
-+++ kafs-client/src/kafs-check-config.c	2023-01-08 02:09:17.313725428 +0000
-@@ -12,10 +12,17 @@
+--- kafs-client.orig/src/kafs-check-config.c
++++ kafs-client/src/kafs-check-config.c
+@@ -12,10 +12,18 @@
  #include <stdio.h>
  #include <stdlib.h>
  #include <string.h>
 +#include <fcntl.h>
++#include <unistd.h>
  #include <getopt.h>
  #include <kafs/cellserv.h>
  #include <kafs/profile.h>
@@ -27,7 +26,7 @@ Index: kafs-client/src/kafs-check-config.c
  static void error_report(const char *fmt, ...)
  {
  	va_list va;
-@@ -53,8 +60,72 @@
+@@ -53,8 +61,72 @@
  	exit(2);
  }
  
@@ -100,7 +99,7 @@ Index: kafs-client/src/kafs-check-config.c
  	struct kafs_lookup_context ctx = {
  		.report.error		= error_report,
  		.want_ipv4_addrs	= true,
-@@ -63,6 +134,7 @@
+@@ -63,6 +135,7 @@
  	const char *filev[10], **filep = NULL;
  	bool dump_profile = false, dump_db = false;
  	int opt, filec = 0;
@@ -108,7 +107,7 @@ Index: kafs-client/src/kafs-check-config.c
  
  	if (argc > 1 && strcmp(argv[1], "--help") == 0)
  		usage(argv[0]);
-@@ -78,6 +150,7 @@
+@@ -78,6 +151,7 @@
  			filev[filec++] = optarg;
  			break;
  		case 'v':
@@ -116,7 +115,7 @@ Index: kafs-client/src/kafs-check-config.c
  			if (!ctx.report.verbose)
  				ctx.report.verbose = verbose;
  			else
-@@ -141,8 +214,7 @@
+@@ -141,8 +215,7 @@
  		kafs_cellserv_dump(kafs_cellserv_db);
  
  	for (; *argv; argv++) {
@@ -126,7 +125,7 @@ Index: kafs-client/src/kafs-check-config.c
  		cell = kafs_lookup_cell(*argv, &ctx);
  		if (cell) {
  			printf("\n");
-@@ -150,7 +222,25 @@
+@@ -150,7 +223,25 @@
  			kafs_dump_cell(cell);
  		}
  	}
