@@ -12,7 +12,7 @@ License: GPL-2+
 
 Files: debian/*
 Copyright: 2020, 2022-2023 Bill MacAllister <bill@ca-zephyr.org>
-  2020, 2023 Russ Allbery <rra@debian.org>
+  2020, 2023-2024 Russ Allbery <rra@debian.org>
 License: GPL-2+
 
 License: GPL-2+
